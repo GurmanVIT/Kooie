@@ -1,12 +1,21 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { appColors } from '../../utils/appColors';
 import BackIcon from '../../assets/svg/BackIcon';
 import SettingWhiteIcon from '../../assets/svg/SettingWhiteIcon';
 import ArrowRightIcon from '../../assets/svg/ArrowRightIcon';
 import LogoutIcon from '../../assets/svg/LogoutIcon';
+import * as Keychain from 'react-native-keychain';
+import { AuthContext } from '../../Contexts/authContext';
+
+
 
 const Setting = ({ navigation }) => {
+
+    const { isAuthenticated, isLoading, logout, } = useContext(AuthContext);
+    console.log({ isAuthenticated });
+
+
 
     return (
         <View style={styles.containerStyle}>
@@ -86,12 +95,12 @@ const Setting = ({ navigation }) => {
                     </View>
                 </View>
 
-                <View style={{ marginTop: 20, flexDirection: 'row' }}>
+                <TouchableOpacity style={{ marginTop: 20, flexDirection: 'row' }} onPress={logout}>
                     <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 16 }}>Sign out</Text>
                     <View style={{ marginLeft: 10 }}>
                         <LogoutIcon />
                     </View>
-                </View>
+                </TouchableOpacity>
             </ScrollView>
         </View>
     );

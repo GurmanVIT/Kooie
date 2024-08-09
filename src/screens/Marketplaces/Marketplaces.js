@@ -1,17 +1,15 @@
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    Touchable,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
 
+
+
+
 const Marketplaces = ({ navigation }) => {
+
+    // console.log({ getToken });
+
 
     return (
         <View style={styles.containerStyle}>
@@ -28,7 +26,7 @@ const Marketplaces = ({ navigation }) => {
 
                 <View style={{ marginTop: 10 }}>
                     <Text style={{ color: appColors.black, fontSize: 16, fontWeight: '600', marginBottom: 8 }}>Kooie Marketplaces</Text>
-                    <ScrollView horizontal={true}>
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <Image
                                 resizeMode="cover"

@@ -7,6 +7,11 @@ import HeartIcon from '../../assets/svg/HeartIcon';
 import PropertyIcon from '../../assets/svg/PropertyIcon';
 import AgentImage from '../../assets/svg/AgentImage';
 import RedSearchIcon from '../../assets/svg/RedSearchIcon';
+// import { Ionicons } from '@react-native-vector-icons';
+
+
+
+
 
 const Home = ({ navigation }) => {
 
@@ -39,6 +44,9 @@ const Home = ({ navigation }) => {
                             onChangeText={setSearch}
                             value={search}
                         />
+                        <RedSearchIcon />
+                        {/* <Ionicons name="house" color="#ff0000" size={20} /> */}
+                        {/*  arrow-forward-circle-sharp  */}
                     </View>
                 </ImageBackground>
 

@@ -1,21 +1,26 @@
 import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import CheckBox from '@react-native-community/checkbox';
 import Images from '../theme/Images';
 import { BASE_URL } from '../../config/config';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Keychain from 'react-native-keychain';
+import { AuthContext } from '../../Contexts/authContext';
+
 
 
 
 const SignInWithEmail = ({ navigation }) => {
+  const { isAuthenticated, isLoading, checkToken } = useContext(AuthContext);
+  console.log('isAuthenticated-->', isAuthenticated);
+
 
   const inputEmailRef = useRef(null);
   const inputPassRef = useRef(null);
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [isEmail, setEmail] = useState("rajbahadur@yopmail.com");
   const [isPassword, setPassword] = useState("12345678");
-  const BASE_URL = `https://kooierealestate.com.au/api`
+
   const submitLogin = async () => {
     console.log('submited func');
     const formdata = new FormData();
@@ -30,14 +35,13 @@ const SignInWithEmail = ({ navigation }) => {
 
     fetch(`${BASE_URL}/login`, requestOptions).then((response) => response.json())
       .then(async (result) => {
-        console.log({ result });
 
         if (result.status === '200') {
-          // await AsyncStorage.setItem('accessToken', result?.access_token);
-          // await AsyncStorage.setItem('refreshToken', result?.refreshtoken?.accessToken);
-          // await AsyncStorage.setItem('Token', JSON.stringify(result?.access_token));
+          await Keychain.setGenericPassword('accessToken', result?.access_token);
+
           Alert.alert(result?.message)
-          navigation.navigate('Marketplaces')
+          checkToken()
+          // navigation.navigate('Marketplaces')
         } else {
           Alert.alert(result?.message)
         }
@@ -49,7 +53,7 @@ const SignInWithEmail = ({ navigation }) => {
 
   return (
     <View style={styles.containerStyle}>
-      <Text style={styles.textStyle}>Sign in with Phone</Text>
+      <Text style={styles.textStyle}></Text>
       <View style={{ alignItems: 'center', marginTop: 50 }}>
         <Image resizeMode="cover" source={Images.kooieBlackLogo} />
       </View>
@@ -94,7 +98,7 @@ const SignInWithEmail = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <Pressable style={{ backgroundColor: appColors.offWhite, height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }} onPress={() => navigation.navigate()}>
+      <Pressable style={{ backgroundColor: appColors.offWhite, height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }} onPress={() => navigation.navigate('SignupWithEmail')}>
         <Text style={{ fontSize: 13, color: appColors.grey }}>Don't have an account? </Text>
         <Text style={{ fontSize: 14, color: appColors.lightRed, fontWeight: '700' }}>Signup</Text>
       </Pressable>
