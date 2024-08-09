@@ -1,15 +1,4 @@
-import {
-    FlatList,
-    Image,
-    ImageBackground,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { FlatList, ImageBackground, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import React, { useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
@@ -88,6 +77,7 @@ const Home = ({ navigation }) => {
                     <FlatList
                         data={DATA}
                         style={{ marginTop: 12 }}
+                        scrollEnabled={false}
                         renderItem={() => (
                             <View style={styles.propertyIconText}>
                                 <View style={{ width: 120, height: 80 }}>

@@ -24,21 +24,22 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='SplashScreen'>
           <Stack.Screen name="SplashScreen" component={SplashScreen} />
-          <Stack.Screen name="SignIn" component={SignIn} />
-          <Stack.Screen name="SignInWithEmail" component={SignInWithEmail} />
-          <Stack.Screen name="OtpScreen" component={OtpScreen} />
-          <Stack.Screen name="BottomBar" component={BottomBar} />
-          <Stack.Screen name="MyKooie" component={MyKooie} />
           <Stack.Screen name="StartingScreen" component={StartingScreen} />
           <Stack.Screen name="JoinSignIn" component={JoinSignIn} />
+          <Stack.Screen name="SignInWithEmail" component={SignInWithEmail} />
           <Stack.Screen name="Marketplaces" component={Marketplaces} />
+          <Stack.Screen name="BottomBar" component={BottomBar} />
+          <Stack.Screen name="MyKooie" component={MyKooie} />
           <Stack.Screen name="Setting" component={Setting} />
           <Stack.Screen name="AccountOverview" component={AccountOverview} />
           <Stack.Screen name="ResentSearch" component={ResentSearch} />
           <Stack.Screen name="HouseBooking" component={HouseBooking} />
           <Stack.Screen name="HouseBookingInnerPage" component={HouseBookingInnerPage} />
+
+          {/* <Stack.Screen name="SignIn" component={SignIn} /> */}
+          {/* <Stack.Screen name="OtpScreen" component={OtpScreen} /> */}
         </Stack.Navigator>
         {/* <Tabs /> */}
       </NavigationContainer>

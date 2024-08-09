@@ -1,10 +1,4 @@
-import {
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React, { useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
@@ -14,42 +8,23 @@ const StartingScreen = ({ navigation }) => {
     return (
         <View style={styles.containerStyle}>
             <View style={{ marginTop: 20, alignItems: 'center', flex: 1 }}>
-                <Image
-                    resizeMode="cover"
-                    source={Images.Illustration}
-                />
+                <Image resizeMode="cover" source={Images.Illustration} />
                 <Text style={{ fontSize: 16, color: appColors.black, textAlign: 'center', fontWeight: '600', marginVertical: 20 }}>So we can help you find your way, what are you looking to do?</Text>
 
-                <TouchableOpacity
-                    style={styles.signInStyle}
-                >
-                    <Text style={{ color: appColors.white, fontWeight: '700' }}>
-                        Buy
-                    </Text>
+                <TouchableOpacity style={styles.signInStyle} >
+                    <Text style={{ color: appColors.white, fontWeight: '700' }}>Buy</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.signInStyle}
-                >
-                    <Text style={{ color: appColors.white, fontWeight: '700' }}>
-                        Sell
-                    </Text>
+                <TouchableOpacity style={styles.signInStyle} >
+                    <Text style={{ color: appColors.white, fontWeight: '700' }}>Sell</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.signInStyle}
-                >
-                    <Text style={{ color: appColors.white, fontWeight: '700' }}>
-                        Rent
-                    </Text>
+                <TouchableOpacity style={styles.signInStyle} >
+                    <Text style={{ color: appColors.white, fontWeight: '700' }}> Rent </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.propertyStyle}
-                >
-                    <Text style={{ color: appColors.black, fontWeight: '700' }}>
-                        Monitor my property
-                    </Text>
+                <TouchableOpacity style={styles.propertyStyle} >
+                    <Text style={{ color: appColors.black, fontWeight: '700' }}> Monitor my property </Text>
                 </TouchableOpacity>
 
                 <Text style={{ marginTop: 20, color: appColors.grey, fontWeight: '600' }}>Just look around</Text>

@@ -1,10 +1,4 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import PhoneInput from 'react-native-phone-input';
@@ -14,7 +8,7 @@ import Images from '../theme/Images';
 const SignInWithPhone = ({ navigation }) => {
 
   const [phoneNumber, setPhoneNumber] = useState('1');
-  const [countryCode, setCountryCode] = useState('US');
+  const [countryCode, setCountryCode] = useState('IN');
 
   const [countryPickerVisible, setCountryPickerVisible] = useState(false);
 
@@ -24,7 +18,6 @@ const SignInWithPhone = ({ navigation }) => {
 
   const onSelectCountry = country => {
     setCountryCode(country.cca2);
-
     const callingCode = country.callingCode[0];
     console.log('callingCode ==>', callingCode);
     setPhoneNumber(callingCode);
@@ -39,22 +32,13 @@ const SignInWithPhone = ({ navigation }) => {
     <View style={styles.containerStyle}>
       <Text style={styles.textStyle}>Sign in with Phone</Text>
       <View style={{ alignItems: 'center', marginTop: 50 }}>
-        <Image
-          resizeMode="cover"
-          source={Images.kooieBlackLogo}
-        />
+        <Image resizeMode="cover" source={Images.kooieBlackLogo} />
       </View>
       <View style={styles.logoStyle}>
 
         <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '600', color: appColors.black }}>Sign in</Text>
         <View
-          style={{
-            backgroundColor: appColors.lightGrey,
-            marginHorizontal: 16,
-            padding: 15,
-            borderRadius: 8,
-            marginTop: 30,
-          }}>
+          style={{ backgroundColor: appColors.lightGrey, marginHorizontal: 16, padding: 15, borderRadius: 8, marginTop: 30, }}>
           <PhoneInput
             onPressFlag={toggleCountryPicker}
             initialCountry={countryCode}

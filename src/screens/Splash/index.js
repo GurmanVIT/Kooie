@@ -7,7 +7,7 @@ const SplashScreen = ({ navigation }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('SignIn');
+      navigation.navigate('StartingScreen');
     }, 3000);
   }, []);
 
@@ -20,7 +20,7 @@ const SplashScreen = ({ navigation }) => {
         />
       </View>
 
-      <Text style={styles.textStyle}>Personalised Search platform </Text>
+      <Text style={styles.textStyle}>Personalised Search platform</Text>
     </View>
   );
 };

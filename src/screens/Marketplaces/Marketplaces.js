@@ -20,13 +20,9 @@ const Marketplaces = ({ navigation }) => {
                 <Text style={{ fontSize: 16, fontWeight: '600', color: appColors.black, marginBottom: 20, textAlign: 'center' }}>Kooie Marketplaces</Text>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: appColors.black, marginBottom: 10 }}>Most popular</Text>
 
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('BottomBar')}>
                     <View style={{ marginVertical: 6 }}>
-                        <Image
-                            resizeMode="cover"
-                            style={{ width: '100%', borderRadius: 14, }}
-                            source={Images.RealEstate}
-                        />
+                        <Image resizeMode="cover" style={{ width: '100%', borderRadius: 14, }} source={Images.RealEstate} />
                     </View>
                 </TouchableOpacity>
 
