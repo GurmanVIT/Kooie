@@ -1,5 +1,5 @@
 import { FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import BackIcon from '../../assets/svg/BackIcon';
 import SearchBottomIcon from '../../assets/svg/SearchBottomIcon';
@@ -10,6 +10,13 @@ import ShawarIcon from '../../assets/svg/ShawarIcon';
 import BedIcon from '../../assets/svg/BedIcon';
 import Images from '../theme/Images';
 import TransparentHeart from '../../assets/svg/TransparentHeart';
+import { BASE_URL } from '../../config/config';
+import dateFormat, { masks } from "dateformat";
+
+
+
+
+
 
 const HouseBooking = ({ navigation }) => {
 
@@ -18,6 +25,43 @@ const HouseBooking = ({ navigation }) => {
         { id: '2', title: 'Item 2' },
         { id: '3', title: 'Item 3' },
     ];
+
+    useEffect(() => {
+        fetchData()
+    }, []);
+
+
+    const [propData, setPropData] = useState([])
+    const fetchData = async () => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer 72|5uK35bwpVO6iSACBSGFjkUwmCw9QpsmXTiWdvZGidb61bb31");
+
+        const formdata = new FormData();
+        formdata.append("id", "263");
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow"
+        };
+
+        fetch(`${BASE_URL}/get/saveproperty`, requestOptions).then((response) => response.json())
+            .then(async (result) => {
+
+                if (result.status === '200') {
+                    // console.log({ result });
+                    setPropData(result?.savesearch)
+                } else {
+                    Alert.alert(result?.message)
+                }
+            })
+            .catch((error) => console.error(error));
+    }
+
+    console.log('propData', propData);
+
+
 
     return (
         <View style={styles.containerStyle}>
@@ -47,60 +91,68 @@ const HouseBooking = ({ navigation }) => {
             <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginTop: 20 }}>
                     <FlatList
-                        data={DATA}
-                        keyExtractor={(index) => index.toString()}
-                        renderItem={() => (
-                            <View style={{ borderWidth: 1, borderColor: appColors.offWhite, borderRadius: 14, marginBottom: 16 }}>
-                                <TouchableOpacity onPress={() => navigation.navigate('HouseBookingInnerPage')}>
-                                    <ImageBackground
-                                        style={{ width: '100%', height: 250, borderTopRightRadius: 14, borderTopLeftRadius: 14 }}
-                                        resizeMode="stretch"
-                                        source={Images.house}
-                                    >
-                                        <View style={{ position: 'absolute', right: 18, top: 18 }}>
-                                            <TransparentHeart />
-                                        </View>
-                                        <Text style={styles.residentialStyle}>RESIDENTIAL</Text>
-                                    </ImageBackground>
-                                </TouchableOpacity>
-                                <View style={{ padding: 14, }}>
-                                    <Text style={{ color: appColors.black, fontWeight: '600', fontSize: 16, marginBottom: 6 }}>For Sale $900,000 - $990,000 </Text>
-                                    <Text>21 Gladswood Gardens, Double Bay NSW 2028</Text>
-                                    <View style={{ marginVertical: 8, flexDirection: 'row', gap: 25 }}>
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14 }}>
-                                                <View style={{ width: 24, height: 24 }}>
-                                                    <BedIcon />
+                        data={propData}
+                        scrollEnabled={false}
+                        // keyExtractor={(index) => index.toString()}
+                        contentContainerStyle={styles.listContainer}
+                        showsVerticalScrollIndicator={false}
+                        renderItem={({ item, index }) => {
+
+                            return (
+                                <View style={{ borderWidth: 1, borderColor: appColors.offWhite, borderRadius: 14, marginBottom: 16 }} key={index}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('HouseBookingInnerPage')}>
+                                        <ImageBackground
+                                            style={{ width: '100%', height: 250, borderTopRightRadius: 14, borderTopLeftRadius: 14 }}
+                                            resizeMode="stretch"
+                                            source={Images.house}
+                                        >
+                                            <View style={{ position: 'absolute', right: 18, top: 18 }}>
+                                                <TransparentHeart />
+                                            </View>
+                                            <Text style={styles.residentialStyle}>RESIDENTIAL</Text>
+                                        </ImageBackground>
+                                    </TouchableOpacity>
+                                    <View style={{ padding: 14, }}>
+                                        <Text style={styles.text_16}>For Sale {(item?.max_price) && '$' + (item?.max_price)} - {(item?.max_price) && '$' + (item?.max_price)} </Text>
+
+                                        <Text>{(item?.city) && (item?.city)}</Text>
+
+                                        <View style={{ marginVertical: 8, flexDirection: 'row', gap: 25 }}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View style={styles.row_}>
+                                                    <View style={styles.icon_container}>
+                                                        <BedIcon />
+                                                    </View>
+                                                    <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6 }}>{(item?.bed_room) ? (item?.bed_room) : 0}</Text>
                                                 </View>
-                                                <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6 }}>2</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14 }}>
-                                                <View style={{ width: 24, height: 24 }}>
-                                                    <ShawarIcon />
+                                                <View style={styles.row_}>
+                                                    <View style={styles.icon_container}>
+                                                        <ShawarIcon />
+                                                    </View>
+                                                    <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6, color: appColors.black }}>{(item?.bathroom) ? (item?.bathroom) : 0}</Text>
                                                 </View>
-                                                <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6, color: appColors.black }}>2</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14 }}>
-                                                <View style={{ width: 24, height: 24 }}>
-                                                    <CarIcon />
+                                                <View style={styles.row_}>
+                                                    <View style={styles.icon_container}>
+                                                        <CarIcon />
+                                                    </View>
+                                                    <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6, color: appColors.black }}>{(item?.car_spaces) ? (item?.car_spaces) : 0}</Text>
                                                 </View>
-                                                <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6, color: appColors.black }}>2</Text>
+                                            </View>
+                                            <View style={styles.row_}>
+                                                <View style={styles.icon_container}>
+                                                    <MeterIcon />
+                                                </View>
+                                                <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6, color: appColors.black }}>600 m2</Text>
                                             </View>
                                         </View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 14 }}>
-                                            <View style={{ width: 24, height: 24 }}>
-                                                <MeterIcon />
-                                            </View>
-                                            <Text style={{ fontSize: 16, fontWeight: '600', marginLeft: 6, color: appColors.black }}>600 m2</Text>
+                                        <View>
+                                            <Text>Inspection : <Text style={{ color: appColors.black, }}>{(item.created_at) && dateFormat((item.created_at), "ddd, dd mmm")}</Text></Text>
                                         </View>
-                                    </View>
-                                    <View>
-                                        <Text>Inspection : <Text style={{ color: appColors.black, }}>Sat 8 Jun</Text></Text>
                                     </View>
                                 </View>
-                            </View>
-                        )}
-                        contentContainerStyle={styles.listContainer}
+                            )
+                        }}
+
                     />
 
                 </View>
@@ -167,4 +219,19 @@ const styles = StyleSheet.create({
         borderColor: appColors.grey,
         bottom: 14
     },
+    row_: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 14
+    },
+    icon_container: {
+        width: 24,
+        height: 24
+    },
+    text_16: {
+        color: appColors.black,
+        fontWeight: '600',
+        fontSize: 16,
+
+    }
 });

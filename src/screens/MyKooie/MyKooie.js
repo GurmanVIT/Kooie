@@ -1,12 +1,4 @@
-import {
-    Image,
-    ImageBackground,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React from 'react';
 import { appColors } from '../../utils/appColors';
 import BedIcon from '../../assets/svg/BedIcon';

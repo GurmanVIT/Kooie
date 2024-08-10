@@ -1,15 +1,4 @@
-import {
-    FlatList,
-    Image,
-    ImageBackground,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { FlatList, ImageBackground, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import React, { useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
@@ -18,6 +7,11 @@ import HeartIcon from '../../assets/svg/HeartIcon';
 import PropertyIcon from '../../assets/svg/PropertyIcon';
 import AgentImage from '../../assets/svg/AgentImage';
 import RedSearchIcon from '../../assets/svg/RedSearchIcon';
+// import { Ionicons } from '@react-native-vector-icons';
+
+
+
+
 
 const Home = ({ navigation }) => {
 
@@ -50,6 +44,9 @@ const Home = ({ navigation }) => {
                             onChangeText={setSearch}
                             value={search}
                         />
+                        <RedSearchIcon />
+                        {/* <Ionicons name="house" color="#ff0000" size={20} /> */}
+                        {/*  arrow-forward-circle-sharp  */}
                     </View>
                 </ImageBackground>
 
@@ -88,6 +85,7 @@ const Home = ({ navigation }) => {
                     <FlatList
                         data={DATA}
                         style={{ marginTop: 12 }}
+                        scrollEnabled={false}
                         renderItem={() => (
                             <View style={styles.propertyIconText}>
                                 <View style={{ width: 120, height: 80 }}>

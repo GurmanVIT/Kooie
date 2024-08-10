@@ -25,13 +25,8 @@ const JoinSignIn = ({ navigation }) => {
                     to make a move.
                 </Text>
             </View>
-            <TouchableOpacity
-                style={styles.signInStyle}
-                onPress={() => navigation.navigate('SignInWithEmail')}
-            >
-                <Text style={{ color: appColors.white, fontWeight: '700' }}>
-                    Sign In
-                </Text>
+            <TouchableOpacity style={styles.signInStyle} onPress={() => navigation.navigate('SignInWithEmail')} >
+                <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign In </Text>
             </TouchableOpacity>
         </View >
     );

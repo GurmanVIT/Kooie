@@ -1,17 +1,15 @@
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    Touchable,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native';
 import React from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
 
+
+
+
 const Marketplaces = ({ navigation }) => {
+
+    // console.log({ getToken });
+
 
     return (
         <View style={styles.containerStyle}>
@@ -20,19 +18,15 @@ const Marketplaces = ({ navigation }) => {
                 <Text style={{ fontSize: 16, fontWeight: '600', color: appColors.black, marginBottom: 20, textAlign: 'center' }}>Kooie Marketplaces</Text>
                 <Text style={{ fontSize: 20, fontWeight: '700', color: appColors.black, marginBottom: 10 }}>Most popular</Text>
 
-                <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <TouchableOpacity onPress={() => navigation.navigate('BottomBar')}>
                     <View style={{ marginVertical: 6 }}>
-                        <Image
-                            resizeMode="cover"
-                            style={{ width: '100%', borderRadius: 14, }}
-                            source={Images.RealEstate}
-                        />
+                        <Image resizeMode="cover" style={{ width: '100%', borderRadius: 14, }} source={Images.RealEstate} />
                     </View>
                 </TouchableOpacity>
 
                 <View style={{ marginTop: 10 }}>
                     <Text style={{ color: appColors.black, fontSize: 16, fontWeight: '600', marginBottom: 8 }}>Kooie Marketplaces</Text>
-                    <ScrollView horizontal={true}>
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={{ flexDirection: 'row', gap: 15 }}>
                             <Image
                                 resizeMode="cover"
