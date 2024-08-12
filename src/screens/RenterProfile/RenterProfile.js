@@ -39,34 +39,34 @@ const RenterProfile = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('AddressHistory')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Address history</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Employment')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Employment</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Income')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Income</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('IdentityDocument')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Identity documents</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('EmergencyContact')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Emergency contact</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />

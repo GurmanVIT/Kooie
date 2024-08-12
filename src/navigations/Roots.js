@@ -19,6 +19,11 @@ import { AuthContext } from '../Contexts/authContext';
 import RenterProfile from '../screens/RenterProfile/RenterProfile';
 import About from '../screens/AboutMe/About';
 import { PersonalDetails } from '../screens/editProfile';
+import AddressHistory from '../screens/AddressHistroy/AddressHistory';
+import Employment from '../screens/Employment/Employment';
+import Income from '../screens/Income/Income';
+import IdentityDocument from '../screens/IdentityDocument/IdentityDocument';
+import EmergencyContact from '../screens/EmergencyContact/EmergencyContact';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +69,11 @@ const Roots = () => {
                     <Stack.Screen name="RenterProfile" component={RenterProfile} />
                     <Stack.Screen name="About" component={About} />
                     <Stack.Screen name="PersonalDetails" component={PersonalDetails} />
+                    <Stack.Screen name="AddressHistory" component={AddressHistory} />
+                    <Stack.Screen name="Employment" component={Employment} />
+                    <Stack.Screen name="Income" component={Income} />
+                    <Stack.Screen name="IdentityDocument" component={IdentityDocument} />
+                    <Stack.Screen name="EmergencyContact" component={EmergencyContact} />
                 </Stack.Group>
             }
 
