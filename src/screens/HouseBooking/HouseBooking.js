@@ -11,11 +11,7 @@ import BedIcon from '../../assets/svg/BedIcon';
 import Images from '../theme/Images';
 import TransparentHeart from '../../assets/svg/TransparentHeart';
 import { BASE_URL } from '../../config/config';
-import dateFormat, { masks } from "dateformat";
-
-
-
-
+// import dateFormat, { masks } from "dateformat"
 
 
 const HouseBooking = ({ navigation }) => {
@@ -146,7 +142,7 @@ const HouseBooking = ({ navigation }) => {
                                             </View>
                                         </View>
                                         <View>
-                                            <Text>Inspection : <Text style={{ color: appColors.black, }}>{(item.created_at) && dateFormat((item.created_at), "ddd, dd mmm")}</Text></Text>
+                                            {/* <Text>Inspection : <Text style={{ color: appColors.black, }}>{(item.created_at) && dateFormat((item.created_at), "ddd, dd mmm")}</Text></Text> */}
                                         </View>
                                     </View>
                                 </View>
@@ -211,7 +207,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 8,
         borderRadius: 18,
-        width: 100,
         textAlign: 'center',
         position: 'absolute',
         left: 14,
