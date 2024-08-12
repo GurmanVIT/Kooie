@@ -36,7 +36,7 @@ const Home = ({ navigation }) => {
                     source={Images.country_img}
                 >
                     <View style={styles.searchContainer}>
-                        <RedSearchIcon />
+                        {/* <RedSearchIcon /> */}
                         <TextInput
                             style={styles.input}
                             placeholder="Start searching"
@@ -44,7 +44,9 @@ const Home = ({ navigation }) => {
                             onChangeText={setSearch}
                             value={search}
                         />
-                        <RedSearchIcon />
+                        <TouchableOpacity>
+                            <RedSearchIcon />
+                        </TouchableOpacity>
                         {/* <Ionicons name="house" color="#ff0000" size={20} /> */}
                         {/*  arrow-forward-circle-sharp  */}
                     </View>

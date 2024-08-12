@@ -18,7 +18,9 @@ const ResentSearch = ({ navigation }) => {
                     placeholder="Search"
                     placeholderTextColor="#aaa"
                 />
-                <Text style={{ color: appColors.black }}>Cancel</Text>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text style={{ color: appColors.black }}>Cancel</Text>
+                </TouchableOpacity>
             </View>
             <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginTop: 30, alignItems: 'center' }}>

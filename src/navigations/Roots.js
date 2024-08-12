@@ -16,6 +16,7 @@ import ResentSearch from '../screens/ResentSearch/ResentSearch';
 import HouseBooking from '../screens/HouseBooking/HouseBooking';
 import HouseBookingInnerPage from '../screens/HouseBookingInnerPage/HouseBookingInnerPage';
 import { AuthContext } from '../Contexts/authContext';
+import { PersonalDetails } from '../screens/editProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,8 +25,6 @@ const Stack = createNativeStackNavigator();
 const Roots = () => {
     const [accessToken, setAccessToken] = useState(null);
     const { isAuthenticated, isLoading, logout, checkToken } = useContext(AuthContext);
-    console.log({ isAuthenticated });
-
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -40,7 +39,6 @@ const Roots = () => {
     if (isLoading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
-    console.log({ accessToken });
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='SignInWithEmail'>
             {!accessToken ?
@@ -61,6 +59,7 @@ const Roots = () => {
                     <Stack.Screen name="ResentSearch" component={ResentSearch} />
                     <Stack.Screen name="HouseBooking" component={HouseBooking} />
                     <Stack.Screen name="HouseBookingInnerPage" component={HouseBookingInnerPage} />
+                    <Stack.Screen name="PersonalDetails" component={PersonalDetails} />
                 </Stack.Group>
             }
 

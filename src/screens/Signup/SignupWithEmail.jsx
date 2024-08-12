@@ -17,14 +17,14 @@ const SignupWithEmail = () => {
 
     const [firstName, setFirstName] = useState('Sam');
     const [LastName, setLastName] = useState('Bahadur');
-    const [isEmail, setEmail] = useState("rajbahadur2@yopmail.com");
+    const [isEmail, setEmail] = useState("sambahadur@yopmail.com");
     const [isPassword, setPassword] = useState("12345678");
     const [isConfirmPassword, setConfirmPassword] = useState("12345678");
     const [isAddress, setAddress] = useState('Chandigarh');
-
-
+    const [isLogo, setLogo] = useState("kooieAppTest.png");
 
     const submitRegister = async () => {
+
         const formdata = new FormData();
         formdata.append("first_name", firstName);
         formdata.append("last_name", LastName);
@@ -33,26 +33,36 @@ const SignupWithEmail = () => {
         formdata.append("password_confirmation", isConfirmPassword);
         formdata.append("address", isAddress);
 
-        const requestOptions = {
-            method: "POST",
-            body: formdata,
-            redirect: "follow"
-        };
+        try {
+            const response = await fetch(`${BASE_URL}/register`, {
+                method: "POST",
+                body: formdata,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            const text = await response.text();
+            if (!text) {
+                throw new Error('Empty response from server');
+            }
+            console.log(text);
 
-        fetch(`${BASE_URL}/register`, requestOptions).then((response) => response.json())
-            .then(async (result) => {
-                console.log({ result });
+            const result = JSON.parse(text);
+            console.log({ result });
 
-                if (result?.status === '200') {
-                    Alert.alert(result?.message)
-                    navigation.navigate('SignInWithEmail')
-                } else {
-                    Alert.alert(result?.message)
-                }
-            })
-            .catch((error) => console.error(error));
+            if (result?.status === '200') {
+                Alert.alert(result?.message);
+                navigation.navigate('SignInWithEmail');
+            } else {
+                Alert.alert(result?.message);
+            }
+        } catch (error) {
+            console.log('Error:', error.message);
+            Alert.alert('Registration failed', error.message);
+        }
 
-    }
+
+    };
 
 
     return (
@@ -64,6 +74,7 @@ const SignupWithEmail = () => {
                 </View>
                 <View style={styles.viewStyle}>
                     <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '600', color: appColors.black, marginTop: 50 }}>Sign up</Text>
+
                     <TextInput
                         ref={inputFirstRef}
                         style={styles.inputStyle}
@@ -123,7 +134,7 @@ const SignupWithEmail = () => {
                 </View>
                 <Pressable style={{ height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }} onPress={() => navigation.navigate('SignInWithEmail')}>
                     <Text style={{ fontSize: 13, color: appColors.grey }}>Already have an account? </Text>
-                    <Text style={{ fontSize: 14, color: appColors.lightRed, fontWeight: '700' }}>Signin</Text>
+                    <Text style={{ fontSize: 14, color: appColors.lightRed, fontWeight: '700' }}>Sign In</Text>
                 </Pressable>
             </ScrollView>
             {/* <TouchableOpacity style={styles.signInStyle} onPress={() => navigation.navigate('SignIn')}>

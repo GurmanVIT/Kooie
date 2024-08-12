@@ -23,6 +23,7 @@ const Tabs = () => {
       tabBarActiveTintColor: appColors.red,
       tabBarInactiveTintColor: appColors.grey,
       tabBarItemStyle: styles.tabBarItemStyle,
+      tabBarHideOnKeyboard: true
     }}>
       <Tab.Screen name="Home" component={Home} options={{
         tabBarIcon: ({ focused }) => (

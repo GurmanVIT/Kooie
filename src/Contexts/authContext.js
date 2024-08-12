@@ -6,20 +6,25 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [authToken, setAuthToken] = useState(null);
+
+    console.log({ authToken });
+
 
     useEffect(() => {
-        // Check if a token is stored when the app loads
-
-
         checkToken();
     }, []);
 
     const checkToken = async () => {
         try {
-            const credentials = await Keychain.getGenericPassword();
-            if (credentials) {
+            const accessTokenCredentials = await Keychain.getGenericPassword({ service: 'accessToken' });
+            const accessToken = accessTokenCredentials.password;
+
+            if (accessToken) {
+                setAuthToken(accessToken)
                 setIsAuthenticated(true);
             } else {
+                setAuthToken(null)
                 setIsAuthenticated(false);
             }
         } catch (error) {
@@ -40,10 +45,16 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await Keychain.resetGenericPassword();
-            setIsAuthenticated(false);
-            checkToken()
-            console.log('here in logout fucntion');
+
+            const result = await Keychain.resetGenericPassword({ service: 'accessToken' });
+
+            if (result) {
+                setIsAuthenticated(false);
+                checkToken()
+                console.log('Access token removed successfully!');
+            } else {
+                console.log('No access token found to remove.');
+            }
 
         } catch (error) {
             console.error("Failed to remove the token", error);
@@ -51,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading, checkToken }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading, checkToken, authToken, }}>
             {children}
         </AuthContext.Provider>
     );

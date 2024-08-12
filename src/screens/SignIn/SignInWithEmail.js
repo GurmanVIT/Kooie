@@ -12,7 +12,6 @@ import { AuthContext } from '../../Contexts/authContext';
 
 const SignInWithEmail = ({ navigation }) => {
   const { isAuthenticated, isLoading, checkToken } = useContext(AuthContext);
-  console.log('isAuthenticated-->', isAuthenticated);
 
 
   const inputEmailRef = useRef(null);
@@ -35,9 +34,10 @@ const SignInWithEmail = ({ navigation }) => {
 
     fetch(`${BASE_URL}/login`, requestOptions).then((response) => response.json())
       .then(async (result) => {
+        console.log(result?.refreshtoken.accessToken.id);
 
         if (result.status === '200') {
-          await Keychain.setGenericPassword('accessToken', result?.access_token);
+          await Keychain.setGenericPassword('accessToken', result?.access_token, { service: 'accessToken' });
 
           Alert.alert(result?.message)
           checkToken()
