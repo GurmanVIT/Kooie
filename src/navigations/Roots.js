@@ -16,6 +16,8 @@ import ResentSearch from '../screens/ResentSearch/ResentSearch';
 import HouseBooking from '../screens/HouseBooking/HouseBooking';
 import HouseBookingInnerPage from '../screens/HouseBookingInnerPage/HouseBookingInnerPage';
 import { AuthContext } from '../Contexts/authContext';
+import RenterProfile from '../screens/RenterProfile/RenterProfile';
+import About from '../screens/AboutMe/About';
 import { PersonalDetails } from '../screens/editProfile';
 
 const Stack = createNativeStackNavigator();
@@ -59,6 +61,8 @@ const Roots = () => {
                     <Stack.Screen name="ResentSearch" component={ResentSearch} />
                     <Stack.Screen name="HouseBooking" component={HouseBooking} />
                     <Stack.Screen name="HouseBookingInnerPage" component={HouseBookingInnerPage} />
+                    <Stack.Screen name="RenterProfile" component={RenterProfile} />
+                    <Stack.Screen name="About" component={About} />
                     <Stack.Screen name="PersonalDetails" component={PersonalDetails} />
                 </Stack.Group>
             }

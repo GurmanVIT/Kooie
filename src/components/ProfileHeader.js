@@ -23,7 +23,7 @@ export default ProfileHeader
 const styles = StyleSheet.create({
     header_: {
         height: 60,
-        backgroundColor: appColors.lightGrey,
+        // backgroundColor: appColors.lightGrey,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

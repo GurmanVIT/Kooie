@@ -22,7 +22,7 @@ const Profile = ({ navigation }) => {
             </View>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginTop: 10 }}>
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('PersonalDetails')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('RenterProfile')}>
                         <View style={styles.profileIconStyle}>
                             <RenterProfileIcon />
                         </View>
