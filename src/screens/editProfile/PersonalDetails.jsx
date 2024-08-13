@@ -18,7 +18,7 @@ import CountryPicker from 'react-native-country-picker-modal';
 
 const PersonalDetails = () => {
     const navigation = useNavigation();
-    const { isLoading, checkToken, authToken, userID } = useContext(AuthContext);
+    const { authToken, userID } = useContext(AuthContext);
     const [loading, setLoading] = useState(false)
     const [userInfo, setUserInfo] = useState('')
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -45,10 +45,10 @@ const PersonalDetails = () => {
 
     const getUserInfo = async () => {
         setLoading(true)
-        const myHeaders = new Headers();
+        let myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
 
-        const formdata = new FormData();
+        let formdata = new FormData();
         formdata.append("id", userID);
 
         const requestOptions = { method: "POST", headers: myHeaders, body: formdata, };
@@ -60,6 +60,7 @@ const PersonalDetails = () => {
                     setFirstName(result?.Userprofile?.first_name)
                     setLastName(result?.Userprofile?.last_name)
                     setNumber(result?.Userprofile?.phone)
+                    setDOB(result?.Userprofile?.dob)
                     setLoading(false)
                 } else {
                     Alert.alert(result?.message)
@@ -77,18 +78,24 @@ const PersonalDetails = () => {
 
     const UpdateUserInfo = async () => {
         setLoading(true)
+        if (!isDOB) {
+            return Alert.alert('Please add your Date of Birth!')
+        }
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
+        console.log({ userID, isDOB, firstName, lastName, isNumber });
 
-        const formdata = new FormData();
+        let formdata = new FormData();
         formdata.append("id", userID);
         formdata.append("first_name", firstName);
         formdata.append("last_name", lastName);
+        formdata.append("dob", isDOB.toString());
         formdata.append("phone", isNumber);
 
         const requestOptions = { method: "POST", headers: myHeaders, body: formdata, };
         fetch(`${BASE_URL}/udpate/userprofile`, requestOptions).then((response) => response.json())
             .then(async (result) => {
+                console.log({ result });
 
                 if (result.status === '200') {
                     Alert.alert(result?.message)
@@ -114,7 +121,7 @@ const PersonalDetails = () => {
         setDatePickerVisibility(false)
     };
 
-    console.log({ isDOB });
+
 
 
     return (
@@ -151,7 +158,7 @@ const PersonalDetails = () => {
                     </View>
 
                     <View style={{ gap: 5 }}>
-                        <Text style={styles.lebel_}>Date of Birth</Text>
+                        <Text style={styles.lebel_}>Date of Birth <Text style={{ color: appColors.red }}>*</Text></Text>
                         <View style={[styles.input_container, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }]}>
                             <TextInput
                                 placeholder='Date of birth'
@@ -174,12 +181,13 @@ const PersonalDetails = () => {
                                 withFilter
                                 withFlag
                                 withCallingCode
+                                containerButtonStyle={{}}
                                 onSelect={(country) => {
                                     setCountryCode(country.cca2);
                                     setCallingCode(country.callingCode[0]);
                                 }}
                             />
-                            <Text style={styles.callingCode}>+{callingCode}</Text>
+                            <Text style={styles.input_}>+{callingCode}</Text>
                             <TextInput
                                 placeholder='Mobile number'
                                 placeholderTextColor={appColors.placeholderColor}

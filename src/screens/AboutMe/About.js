@@ -1,23 +1,89 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useState } from 'react';
 import { appColors } from '../../utils/appColors';
-import BackIcon from '../../assets/svg/BackIcon';
 import UpdateIcon from '../../assets/svg/UpdateIcon';
 import { ProfileFooter, ProfileHeader } from '../../components';
+import { AuthContext } from '../../Contexts/authContext';
+import { BASE_URL } from '../../config/config';
+import DocumentPicker, { types } from 'react-native-document-picker';
+
+
+
+
 
 const About = ({ navigation }) => {
-
-    const [text, setText] = useState('');
+    const { authToken, userID } = useContext(AuthContext);
+    const [aboutus, setAboutUs] = useState('');
+    const [supotedDoc, setSupotedDoc] = useState('');
     const maxLength = 3000;
+    const [loading, setLoading] = useState(false);
+
+    console.log(supotedDoc);
+    const pickFile = async () => {
+        try {
+            const res = await DocumentPicker.pick({
+                type: [types.pdf, types.images], // Allow both PDFs and images
+            });
+
+            const validFormats = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'];
+            const isValidFormat = validFormats.includes(res[0].type);
+            const isValidSize = res[0].size <= 10 * 1024 * 1024; // 10MB in bytes
+
+            if (isValidFormat && isValidSize) {
+                setSupotedDoc(res?.[0])
+                // uploadFile(res[0]);
+            } else {
+                Alert.alert('Invalid file format or size. Please select a PDF, JPG, JPEG, PNG, or GIF file under 10MB.');
+            }
+        } catch (err) {
+            if (DocumentPicker.isCancel(err)) {
+                console.log('User cancelled document picker');
+            } else {
+                console.error('DocumentPicker Error: ', err);
+            }
+        }
+    };
+
+    const updateAboutMe = async () => {
+        setLoading(true)
+        if (!aboutus) {
+            return Alert.alert('Please Introduce yourself!')
+        }
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        let formdata = new FormData();
+        formdata.append("id", userID);
+        formdata.append("aboutus", aboutus);
+        formdata.append("support_doc", supotedDoc);
+
+        const requestOptions = { method: "POST", headers: myHeaders, body: formdata, };
+        fetch(`${BASE_URL}/save/aboutme`, requestOptions).then((response) => response.json())
+            .then(async (result) => {
+                console.log({ result });
+
+                if (result.status === '200') {
+                    Alert.alert(result?.message)
+                    navigation.goBack()
+                    setLoading(false)
+                } else {
+                    Alert.alert(result?.message)
+                    setLoading(false)
+
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                setLoading(false)
+
+            });
+
+    }
+
     return (
         <View style={styles.containerStyle}>
-            {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
-                <TouchableOpacity style={styles.backIconStyle} onPress={() => navigation.goBack()}>
-                    <BackIcon />
-                </TouchableOpacity>
-                <Text style={styles.collectionStyle}>Profile</Text>
 
-            </View> */}
+
             <ProfileHeader navigation={navigation} title={'Profile'} />
             <ScrollView style={{ flex: 1, paddingHorizontal: 16, }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: 20 }}>
@@ -31,28 +97,30 @@ const About = ({ navigation }) => {
                         style={styles.textArea}
                         placeholder="Type something..."
                         placeholderTextColor="gray"
-                        value={text}
-                        onChangeText={setText}
+                        value={aboutus}
+                        onChangeText={setAboutUs}
                         multiline={true}
                         numberOfLines={4}
                         maxLength={maxLength}
                     />
-                    <Text style={{ fontSize: 12, color: appColors.placeholderColor, marginTop: 8 }}>{text.length}/{maxLength}</Text>
+                    <Text style={{ fontSize: 12, color: appColors.placeholderColor, marginTop: 8 }}>{aboutus.length}/{maxLength}</Text>
                     <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 16, color: appColors.black }}>Optional supporting documents</Text>
                     <Text style={{ marginTop: 8, color: appColors.black }}>Attach any supporting document you’d like e.g. letters of recommendation, tenant ledgers or company guarantees.</Text>
 
-                    <Text style={{ fontSize: 12, color: appColors.black, marginTop: 14, marginLeft: 6 }}>Introduce yourself</Text>
-                    <View style={styles.updateButtonStyle}>
+                    <Text style={{ fontSize: 12, color: appColors.black, marginTop: 14, marginLeft: 6 }}>Upload a file</Text>
+                    <TouchableOpacity style={styles.updateButtonStyle} onPress={pickFile}>
                         <UpdateIcon />
                         <Text style={{ color: appColors.black, marginLeft: 10 }}>Upload a file</Text>
-                    </View>
+                    </TouchableOpacity>
                     <Text style={{ fontSize: 12, color: appColors.placeholder, textAlign: 'center', marginVertical: 10 }}>Max. 10MB - JPG, JPEG, PNG</Text>
-                    <TouchableOpacity style={styles.button_}>
+                    <TouchableOpacity style={styles.button_} onPress={updateAboutMe}>
                         <Text style={styles.button_text}>Save and back</Text>
                     </TouchableOpacity>
 
                     <ProfileFooter />
                 </View>
+
+
             </ScrollView>
         </View>
     );
@@ -84,6 +152,18 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: appColors.black,
         marginTop: 4
+    },
+    headSecoundStyle: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginTop: 10,
+        color: appColors.black
+    },
+    headSecoundStyle: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginTop: 10,
+        color: appColors.black
     },
     textArea: {
         height: 180,
@@ -125,18 +205,5 @@ const styles = StyleSheet.create({
         color: appColors.white,
         fontWeight: 'bold',
         fontSize: 14
-    },
-    privancyStyle: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: appColors.black
-    },
-    bottomLinkStyle: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-        borderBottomWidth: 2,
-        borderColor: appColors.lightGrey,
-        paddingBottom: 16
     },
 });

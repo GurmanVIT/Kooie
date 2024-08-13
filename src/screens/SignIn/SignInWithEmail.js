@@ -38,11 +38,11 @@ const SignInWithEmail = ({ navigation }) => {
 
     fetch(`${BASE_URL}/login`, requestOptions).then((response) => response.json())
       .then(async (result) => {
-        console.log(result?.refreshtoken.accessToken.id);
+        console.log(result?.user_id);
 
         if (result.status === '200') {
           await Keychain.setGenericPassword('accessToken', result?.access_token, { service: 'accessToken' });
-          await Keychain.setGenericPassword('userID', JSON.stringify(result?.refreshtoken.accessToken.id), { service: 'userID' });
+          await Keychain.setGenericPassword('userID', JSON.stringify(result?.user_id), { service: 'userID' });
 
           Alert.alert(result?.message)
           checkToken()
