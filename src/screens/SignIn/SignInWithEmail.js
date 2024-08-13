@@ -1,4 +1,4 @@
-import { Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import React, { useContext, useRef, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import CheckBox from '@react-native-community/checkbox';
@@ -19,9 +19,13 @@ const SignInWithEmail = ({ navigation }) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [isEmail, setEmail] = useState("rajbahadur@yopmail.com");
   const [isPassword, setPassword] = useState("12345678");
+  const [loading, setLoading] = useState(false)
+
+
 
   const submitLogin = async () => {
-    console.log('submited func');
+
+    setLoading(true)
     const formdata = new FormData();
     formdata.append("email", isEmail);
     formdata.append("password", isPassword);
@@ -38,15 +42,22 @@ const SignInWithEmail = ({ navigation }) => {
 
         if (result.status === '200') {
           await Keychain.setGenericPassword('accessToken', result?.access_token, { service: 'accessToken' });
+          await Keychain.setGenericPassword('userID', JSON.stringify(result?.refreshtoken.accessToken.id), { service: 'userID' });
 
           Alert.alert(result?.message)
           checkToken()
-          // navigation.navigate('Marketplaces')
+          setLoading(false)
         } else {
           Alert.alert(result?.message)
+          setLoading(false)
+
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setLoading(false)
+
+      });
 
   }
 
@@ -77,8 +88,11 @@ const SignInWithEmail = ({ navigation }) => {
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.buttonStyle} onPress={submitLogin} >
-          <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign In </Text>
+        <TouchableOpacity style={styles.buttonStyle} onPress={submitLogin} disabled={loading}>
+          {loading ? <>
+            <ActivityIndicator size={'small'} color={appColors.white} />
+          </> :
+            <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign In </Text>}
         </TouchableOpacity>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginHorizontal: 16, }}>

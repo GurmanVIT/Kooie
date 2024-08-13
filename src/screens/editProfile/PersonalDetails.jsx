@@ -1,16 +1,124 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { memo, useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import BackIcon from '../../assets/svg/BackIcon'
-import { ProfileHeader } from '../../components'
+import { ProfileFooter, ProfileHeader } from '../../components'
 import { useNavigation } from '@react-navigation/native'
 import { appColors } from '../../utils/appColors'
 import { StretchOutY } from 'react-native-reanimated'
+import { BASE_URL } from '../../config/config'
+import { AuthContext } from '../../Contexts/authContext'
+import { IMAGES } from '../../assets'
+import { moderateScale, scale } from 'react-native-size-matters'
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import dateFormat from 'dateformat'
+import CountryPicker from 'react-native-country-picker-modal';
+
+
 
 const PersonalDetails = () => {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const { isLoading, checkToken, authToken, userID } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false)
+    const [userInfo, setUserInfo] = useState('')
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+    //
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [isDOB, setDOB] = useState(null);
+
+
+    const [countryCode, setCountryCode] = useState('IN');
+    const [callingCode, setCallingCode] = useState('91');
+    const [isNumber, setNumber] = useState('');
+    // console.log({ countryCode, callingCode, isNumber });
+
+    const handleMobileNumberChange = (text) => {
+        setNumber(text.replace(/[^0-9]/g, ''));
+    };
+
+
+    useEffect(() => {
+        userID && getUserInfo()
+    }, [userID])
+
+    const getUserInfo = async () => {
+        setLoading(true)
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("id", userID);
+
+        const requestOptions = { method: "POST", headers: myHeaders, body: formdata, };
+        fetch(`${BASE_URL}/get/userprofile`, requestOptions).then((response) => response.json())
+            .then(async (result) => {
+
+                if (result.status === '200') {
+                    setUserInfo(result?.Userprofile)
+                    setFirstName(result?.Userprofile?.first_name)
+                    setLastName(result?.Userprofile?.last_name)
+                    setNumber(result?.Userprofile?.phone)
+                    setLoading(false)
+                } else {
+                    Alert.alert(result?.message)
+                    setLoading(false)
+
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                setLoading(false)
+
+            });
+
+    }
+
+    const UpdateUserInfo = async () => {
+        setLoading(true)
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("id", userID);
+        formdata.append("first_name", firstName);
+        formdata.append("last_name", lastName);
+        formdata.append("phone", isNumber);
+
+        const requestOptions = { method: "POST", headers: myHeaders, body: formdata, };
+        fetch(`${BASE_URL}/udpate/userprofile`, requestOptions).then((response) => response.json())
+            .then(async (result) => {
+
+                if (result.status === '200') {
+                    Alert.alert(result?.message)
+                    navigation.goBack()
+                    setLoading(false)
+                } else {
+                    Alert.alert(result?.message)
+                    setLoading(false)
+
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                setLoading(false)
+
+            });
+
+    }
+    //
+
+    const handlePickDOB = (date) => {
+        setDOB(date)
+        setDatePickerVisibility(false)
+    };
+
+    console.log({ isDOB });
+
+
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.root_}>
             <ProfileHeader navigation={navigation} title={'Profile'} />
             <ScrollView style={styles.content_}>
                 <View style={styles.top_section}>
@@ -24,7 +132,9 @@ const PersonalDetails = () => {
                             <TextInput
                                 placeholder='First name'
                                 placeholderTextColor={appColors.placeholderColor}
-                                style={styles.input_} />
+                                style={styles.input_}
+                                value={firstName && firstName}
+                                onChangeText={(val) => setFirstName(val)} />
                         </View>
                     </View>
 
@@ -34,35 +144,59 @@ const PersonalDetails = () => {
                             <TextInput
                                 placeholder='Last name'
                                 placeholderTextColor={appColors.placeholderColor}
-                                style={styles.input_} />
+                                style={styles.input_}
+                                value={lastName && lastName}
+                                onChangeText={(val) => setLastName(val)} />
                         </View>
                     </View>
 
                     <View style={{ gap: 5 }}>
                         <Text style={styles.lebel_}>Date of Birth</Text>
-                        <View style={styles.input_container}>
+                        <View style={[styles.input_container, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', }]}>
                             <TextInput
                                 placeholder='Date of birth'
                                 placeholderTextColor={appColors.placeholderColor}
-                                style={styles.input_} />
+                                style={styles.input_}
+                                value={isDOB ? dateFormat(isDOB, 'dd-mm-yyyy') : ''}
+                                editable={false}
+                            // onChange={(val) => setDOB(val)}
+                            />
+                            <TouchableOpacity style={styles.caln_icon} onPress={() => { setDatePickerVisibility(true) }}>
+                                <Image source={IMAGES.calender} style={{ width: '100%', height: '100%' }} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <View style={{ gap: 5 }}>
                         <Text style={styles.lebel_}>Phone number (mobile preferred)</Text>
                         <View style={styles.input_container}>
+                            <CountryPicker
+                                countryCode={countryCode}
+                                withFilter
+                                withFlag
+                                withCallingCode
+                                onSelect={(country) => {
+                                    setCountryCode(country.cca2);
+                                    setCallingCode(country.callingCode[0]);
+                                }}
+                            />
+                            <Text style={styles.callingCode}>+{callingCode}</Text>
                             <TextInput
                                 placeholder='Mobile number'
                                 placeholderTextColor={appColors.placeholderColor}
                                 style={styles.input_}
                                 keyboardType='phone-pad'
+                                value={isNumber}
+                                // onChangeText={(val) => setNumber(val)}
+                                onChangeText={handleMobileNumberChange}
+                                maxLength={10}
                             />
                         </View>
                         <Text style={{ fontSize: 11, left: 5, color: appColors.grey }}>user numbers only, without spaces,other charectors,</Text>
                     </View>
 
                     <View style={{ marginVertical: 20 }}>
-                        <TouchableOpacity style={styles.button_}>
-                            <Text style={styles.button_text}>Save and back</Text>
+                        <TouchableOpacity style={styles.button_} onPress={UpdateUserInfo} disabled={loading}>
+                            {loading ? <ActivityIndicator size={'small'} color={appColors.white} /> : <Text style={styles.button_text}>Save and back</Text>}
                         </TouchableOpacity>
                     </View>
 
@@ -72,14 +206,26 @@ const PersonalDetails = () => {
                     </View>
 
                 </View>
+                <ProfileFooter />
             </ScrollView>
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handlePickDOB}
+                onCancel={() => setDatePickerVisibility(false)}
+
+            />
         </SafeAreaView>
     )
 }
 
-export default PersonalDetails
+export default memo(PersonalDetails)
 
 const styles = StyleSheet.create({
+    root_: {
+        flex: 1,
+        backgroundColor: appColors.white
+    },
     content_: {
         paddingHorizontal: 18
     },
@@ -111,6 +257,9 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 45,
         borderRadius: 5,
+        paddingHorizontal: moderateScale(10),
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     input_: {
         color: appColors.inputColor
@@ -131,5 +280,10 @@ const styles = StyleSheet.create({
         color: appColors.black,
         fontSize: 16,
         fontWeight: 'bold'
+    },
+    caln_icon: {
+        width: scale(20),
+        height: scale(20),
+        marginRight: scale(8)
     }
 })

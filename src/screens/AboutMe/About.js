@@ -3,26 +3,28 @@ import React, { useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import BackIcon from '../../assets/svg/BackIcon';
 import UpdateIcon from '../../assets/svg/UpdateIcon';
+import { ProfileFooter, ProfileHeader } from '../../components';
 
 const About = ({ navigation }) => {
 
     const [text, setText] = useState('');
-
+    const maxLength = 3000;
     return (
         <View style={styles.containerStyle}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+            {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
                 <TouchableOpacity style={styles.backIconStyle} onPress={() => navigation.goBack()}>
                     <BackIcon />
                 </TouchableOpacity>
                 <Text style={styles.collectionStyle}>Profile</Text>
 
-            </View>
-            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+            </View> */}
+            <ProfileHeader navigation={navigation} title={'Profile'} />
+            <ScrollView style={{ flex: 1, paddingHorizontal: 16, }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: 20 }}>
                     <Text style={{ fontSize: 12, fontWeight: '300', color: appColors.placeholderColor }}>Renter Profile</Text>
                     <Text style={styles.headStyle}>About me</Text>
                     <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 10, color: appColors.black }}>Introduce yourself </Text>
-                    <Text style={{ marginVertical: 6, color: appColors.black, fontWeight: '300' }}>Share with the agent and landlord why you are the     bets fit for the property.</Text>
+                    <Text style={{ marginVertical: 6, color: appColors.black, fontWeight: '300' }}>Share with the agent and landlord why you are the bets fit for the property.</Text>
 
                     <Text style={{ fontSize: 12, color: appColors.black, marginTop: 10, marginLeft: 6 }}>Introduce yourself</Text>
                     <TextInput
@@ -33,8 +35,9 @@ const About = ({ navigation }) => {
                         onChangeText={setText}
                         multiline={true}
                         numberOfLines={4}
+                        maxLength={maxLength}
                     />
-                    <Text style={{ fontSize: 12, color: appColors.placeholderColor, marginTop: 8 }}>0/3000</Text>
+                    <Text style={{ fontSize: 12, color: appColors.placeholderColor, marginTop: 8 }}>{text.length}/{maxLength}</Text>
                     <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 16, color: appColors.black }}>Optional supporting documents</Text>
                     <Text style={{ marginTop: 8, color: appColors.black }}>Attach any supporting document you’d like e.g. letters of recommendation, tenant ledgers or company guarantees.</Text>
 
@@ -43,21 +46,12 @@ const About = ({ navigation }) => {
                         <UpdateIcon />
                         <Text style={{ color: appColors.black, marginLeft: 10 }}>Upload a file</Text>
                     </View>
-                    <Text style={{ fontSize: 12, color: appColors.placeholder, textAlign: 'center', marginTop: 8 }}>Max. 10MB - GIF, JPG, JPEG, PNG, HEIC, PDF</Text>
-                    <TouchableOpacity
-                        style={styles.buttonStyle}
-                        onPress={() => navigation.navigate('')}>
-                        <Text style={{ color: appColors.white, fontWeight: '700' }}>
-                            Save and back
-                        </Text>
+                    <Text style={{ fontSize: 12, color: appColors.placeholder, textAlign: 'center', marginVertical: 10 }}>Max. 10MB - JPG, JPEG, PNG</Text>
+                    <TouchableOpacity style={styles.button_}>
+                        <Text style={styles.button_text}>Save and back</Text>
                     </TouchableOpacity>
-                    <View style={styles.bottomLinkStyle}>
-                        <Text style={styles.privancyStyle}>Privacy Policy</Text>
-                        <Text style={styles.privancyStyle}>Terms and conditions</Text>
-                        <Text style={styles.privancyStyle}>Help centre</Text>
-                    </View>
 
-                    <Text style={{ marginTop: 14, textAlign: 'center', fontSize: 12, fontWeight: '600' }}>Kooie.com.au is owned and operated by xxx</Text>
+                    <ProfileFooter />
                 </View>
             </ScrollView>
         </View>
@@ -70,7 +64,7 @@ const styles = StyleSheet.create({
     containerStyle: {
         flex: 1,
         backgroundColor: appColors.white,
-        paddingHorizontal: 16,
+
     },
     collectionStyle: {
         flex: 1,
@@ -114,11 +108,23 @@ const styles = StyleSheet.create({
     buttonStyle: {
         color: appColors.white,
         backgroundColor: appColors.red,
-        marginHorizontal: 16,
-        padding: 16,
+        // marginHorizontal: 16,
+        // padding: 16,
         borderRadius: 24,
         marginTop: 20,
         alignItems: 'center',
+    },
+    button_: {
+        backgroundColor: appColors.red,
+        height: 45,
+        borderRadius: 45 / 2,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    button_text: {
+        color: appColors.white,
+        fontWeight: 'bold',
+        fontSize: 14
     },
     privancyStyle: {
         fontSize: 12,

@@ -7,24 +7,33 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [authToken, setAuthToken] = useState(null);
+    const [userID, setuserID] = useState(null);
 
-    console.log({ authToken });
+    console.log({ authToken, userID });
 
 
     useEffect(() => {
+        // Check if a token is stored when the app loads
+
+
         checkToken();
     }, []);
+    // console.log({ authToken });
 
     const checkToken = async () => {
         try {
             const accessTokenCredentials = await Keychain.getGenericPassword({ service: 'accessToken' });
+            const userIdCredentials = await Keychain.getGenericPassword({ service: 'userID' });
             const accessToken = accessTokenCredentials.password;
+            const UserID = userIdCredentials.password;
 
-            if (accessToken) {
+            if (accessToken && UserID) {
                 setAuthToken(accessToken)
+                setuserID(UserID)
                 setIsAuthenticated(true);
             } else {
                 setAuthToken(null)
+                setuserID(null)
                 setIsAuthenticated(false);
             }
         } catch (error) {
@@ -47,6 +56,7 @@ export const AuthProvider = ({ children }) => {
         try {
 
             const result = await Keychain.resetGenericPassword({ service: 'accessToken' });
+            await Keychain.resetGenericPassword({ service: 'userID' });
 
             if (result) {
                 setIsAuthenticated(false);
@@ -62,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading, checkToken, authToken, }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, isLoading, checkToken, authToken, userID }}>
             {children}
         </AuthContext.Provider>
     );
