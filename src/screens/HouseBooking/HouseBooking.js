@@ -13,6 +13,7 @@ import TransparentHeart from '../../assets/svg/TransparentHeart';
 import { BASE_URL } from '../../config/config';
 import dateFormat, { masks } from "dateformat";
 import { AuthContext } from '../../Contexts/authContext';
+import { IMAGES } from '../../assets';
 
 
 
@@ -26,7 +27,7 @@ const HouseBooking = ({ navigation }) => {
     const [propData, setPropData] = useState([]);
     const [loading, setLoading] = useState(false)
     useEffect(() => {
-        fetchData()
+        // fetchData()
     }, []);
 
 
@@ -79,13 +80,14 @@ const HouseBooking = ({ navigation }) => {
                         }
                     />
                 </View>
-                <TouchableOpacity style={{ width: 24, height: 24 }}>
-                    <HeartBottomIcon stroke={appColors.grey} />
+                <TouchableOpacity style={{ width: 34, height: 34, padding: 5, borderRadius: 34 / 2 }} onPress={() => navigation.navigate('Filters')}>
+                    <Image source={IMAGES.filter} style={styles.iconStyle} resizeMode='contain' />
+                    {/* <HeartBottomIcon stroke={appColors.grey} /> */}
                 </TouchableOpacity>
             </View>
             <View style={styles.tabStyle}>
                 <Text style={styles.textStyles}>Sort</Text>
-                <Text style={styles.textStyles}>Inspections</Text>
+                {/* <Text style={styles.textStyles}>Inspections</Text> */}
                 <Text style={styles.textStyles}>Map</Text>
             </View>
             <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
@@ -96,7 +98,7 @@ const HouseBooking = ({ navigation }) => {
                             <Text style={styles.loading_txt}>Please wait..</Text>
                         </View>
                         : <FlatList
-                            data={propData}
+                            data={[{}, {}]}
                             scrollEnabled={false}
                             // keyExtractor={(index) => index.toString()}
                             contentContainerStyle={styles.listContainer}
@@ -241,6 +243,11 @@ const styles = StyleSheet.create({
         color: appColors.black,
         fontWeight: '600',
         fontSize: 16,
+
+    },
+    iconStyle: {
+        width: '100%',
+        height: '100%',
 
     }
 });

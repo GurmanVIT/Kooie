@@ -28,6 +28,9 @@ const JoinSignIn = ({ navigation }) => {
             <TouchableOpacity style={styles.signInStyle} onPress={() => navigation.navigate('SignInWithEmail')} >
                 <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign In </Text>
             </TouchableOpacity>
+            <TouchableOpacity style={[styles.signInStyle, { backgroundColor: appColors.red }]} onPress={() => navigation.navigate('SignupWithEmail')} >
+                <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign Up </Text>
+            </TouchableOpacity>
         </View >
     );
 };
@@ -42,9 +45,7 @@ const styles = StyleSheet.create({
     },
     signInStyle: {
         borderRadius: 24,
-        borderColor: appColors.black,
         backgroundColor: appColors.black,
-        borderWidth: 1,
         alignItems: 'center',
         padding: 16,
         width: '100%',

@@ -15,15 +15,17 @@ import AccountOverview from '../screens/AccountOverview/AccountOverview';
 import ResentSearch from '../screens/ResentSearch/ResentSearch';
 import HouseBooking from '../screens/HouseBooking/HouseBooking';
 import HouseBookingInnerPage from '../screens/HouseBookingInnerPage/HouseBookingInnerPage';
-import { AuthContext } from '../Contexts/authContext';
 import RenterProfile from '../screens/RenterProfile/RenterProfile';
 import About from '../screens/AboutMe/About';
-import { PersonalDetails } from '../screens/editProfile';
 import AddressHistory from '../screens/AddressHistroy/AddressHistory';
 import Employment from '../screens/Employment/Employment';
 import Income from '../screens/Income/Income';
 import IdentityDocument from '../screens/IdentityDocument/IdentityDocument';
 import EmergencyContact from '../screens/EmergencyContact/EmergencyContact';
+import { PersonalDetails } from '../screens/editProfile';
+import { AuthContext } from '../Contexts/authContext';
+import { ForgotPassword } from '../screens/ForgotPassword';
+import { Filters } from '../screens/HouseBooking';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,14 +49,15 @@ const Roots = () => {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='SignInWithEmail'>
-            {!accessToken ?
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='BottomBar'>
+            {accessToken ?
                 <Stack.Group>
                     <Stack.Screen name="SplashScreen" component={SplashScreen} />
                     <Stack.Screen name="StartingScreen" component={StartingScreen} />
                     <Stack.Screen name="JoinSignIn" component={JoinSignIn} />
                     <Stack.Screen name="SignInWithEmail" component={SignInWithEmail} />
                     <Stack.Screen name="SignupWithEmail" component={SignupWithEmail} />
+                    <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
                 </Stack.Group>
                 :
                 <Stack.Group initialRouteName='BottomBar'>
@@ -65,6 +68,7 @@ const Roots = () => {
                     <Stack.Screen name="AccountOverview" component={AccountOverview} />
                     <Stack.Screen name="ResentSearch" component={ResentSearch} />
                     <Stack.Screen name="HouseBooking" component={HouseBooking} />
+                    <Stack.Screen name="Filters" component={Filters} />
                     <Stack.Screen name="HouseBookingInnerPage" component={HouseBookingInnerPage} />
                     <Stack.Screen name="RenterProfile" component={RenterProfile} />
                     <Stack.Screen name="About" component={About} />

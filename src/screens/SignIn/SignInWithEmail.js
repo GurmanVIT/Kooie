@@ -38,7 +38,7 @@ const SignInWithEmail = ({ navigation }) => {
 
     fetch(`${BASE_URL}/login`, requestOptions).then((response) => response.json())
       .then(async (result) => {
-        console.log(result?.user_id);
+        console.log(result);
 
         if (result.status === '200') {
           await Keychain.setGenericPassword('accessToken', result?.access_token, { service: 'accessToken' });
@@ -107,9 +107,9 @@ const SignInWithEmail = ({ navigation }) => {
             />
             <Text style={{ color: appColors.black }}>Remember Me</Text>
           </View>
-          <View>
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
             <Text style={styles.textForgotStyle}>Forgot Password?</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
       <Pressable style={{ backgroundColor: appColors.offWhite, height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }} onPress={() => navigation.navigate('SignupWithEmail')}>
