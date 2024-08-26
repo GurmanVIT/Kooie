@@ -39,6 +39,9 @@ const ForgotPassword = ({ navigation }) => {
     }
     console.log({ timeLeft });
 
+    const submitForgot = async (params) => {
+
+    }
 
 
     return (
@@ -92,7 +95,7 @@ const ForgotPassword = ({ navigation }) => {
                 />
 
                 <TouchableOpacity style={styles.buttonStyle}
-                // onPress={submitLogin} disabled={loading}
+                    onPress={submitForgot} disabled={loading}
                 >
                     {loading ? <>
                         <ActivityIndicator size={'small'} color={appColors.white} />

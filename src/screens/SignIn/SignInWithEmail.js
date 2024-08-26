@@ -17,7 +17,7 @@ const SignInWithEmail = ({ navigation }) => {
   const inputEmailRef = useRef(null);
   const inputPassRef = useRef(null);
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
-  const [isEmail, setEmail] = useState("rajbahadur@yopmail.com");
+  const [isEmail, setEmail] = useState("garry.jstech@gmail.com");
   const [isPassword, setPassword] = useState("12345678");
   const [loading, setLoading] = useState(false)
 

@@ -15,12 +15,13 @@ const SignupWithEmail = () => {
     const inputConfirmPassRef = useRef(null);
     const inputAddressRef = useRef(null);
 
-    const [firstName, setFirstName] = useState('Sam');
-    const [LastName, setLastName] = useState('Bahadur');
-    const [isEmail, setEmail] = useState("sambahadur@yopmail.com");
+    const [loading, setLoading] = useState(false)
+    const [firstName, setFirstName] = useState('Garry');
+    const [LastName, setLastName] = useState('Sahota');
+    const [isEmail, setEmail] = useState("garry.jstech@gmail.com");
     const [isPassword, setPassword] = useState("12345678");
     const [isConfirmPassword, setConfirmPassword] = useState("12345678");
-    const [isAddress, setAddress] = useState('Chandigarh');
+    const [isAddress, setAddress] = useState('Mohali');
     const [isOTP, setOTP] = useState(null);
 
     const submitRegister = async () => {
@@ -35,6 +36,7 @@ const SignupWithEmail = () => {
         formdata.append("otp", isOTP);
 
         try {
+            setLoading(true)
             const response = await fetch(`${BASE_URL}/register`, {
                 method: "POST",
                 body: formdata,
@@ -44,22 +46,23 @@ const SignupWithEmail = () => {
             });
             const text = await response.text();
             if (!text) {
+                setLoading(false)
                 throw new Error('Empty response from server');
             }
-            console.log(text);
-
             const result = JSON.parse(text);
-            console.log({ result });
-
             if (result?.status === '200') {
                 Alert.alert(result?.message);
+                setLoading(false)
                 navigation.navigate('SignInWithEmail');
             } else {
                 Alert.alert(result?.message);
+                setLoading(false)
             }
         } catch (error) {
             console.log('Error:', error.message);
             Alert.alert('Registration failed', error.message);
+            setLoading(false)
+
         }
 
 

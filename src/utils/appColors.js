@@ -9,6 +9,7 @@ export const appColors = {
   lightGrey: '#E9EBEE',
   yellow: '#FAF48D',
   pink: '#E91C72',
+  borderColor: '#e0e0e0',
   borderLightGrey: '#75808A',
   lightRed: '#FF474C',
   red: '#EF1E28',

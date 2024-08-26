@@ -34,6 +34,7 @@ const Stack = createNativeStackNavigator();
 const Roots = () => {
     const [accessToken, setAccessToken] = useState(null);
     const { isAuthenticated, isLoading, logout, checkToken } = useContext(AuthContext);
+    console.log("accessToken==>", accessToken);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -49,8 +50,8 @@ const Roots = () => {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='BottomBar'>
-            {accessToken ?
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='SplashScreen'>
+            {!accessToken ?
                 <Stack.Group>
                     <Stack.Screen name="SplashScreen" component={SplashScreen} />
                     <Stack.Screen name="StartingScreen" component={StartingScreen} />
@@ -60,8 +61,7 @@ const Roots = () => {
                     <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
                 </Stack.Group>
                 :
-                <Stack.Group initialRouteName='BottomBar'>
-                    <Stack.Screen name="Marketplaces" component={Marketplaces} />
+                <Stack.Group >
                     <Stack.Screen name="BottomBar" component={BottomBar} />
                     <Stack.Screen name="MyKooie" component={MyKooie} />
                     <Stack.Screen name="Setting" component={Setting} />
@@ -78,6 +78,7 @@ const Roots = () => {
                     <Stack.Screen name="Income" component={Income} />
                     <Stack.Screen name="IdentityDocument" component={IdentityDocument} />
                     <Stack.Screen name="EmergencyContact" component={EmergencyContact} />
+                    {/* <Stack.Screen name="Marketplaces" component={Marketplaces} /> */}
                 </Stack.Group>
             }
 

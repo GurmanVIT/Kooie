@@ -97,7 +97,8 @@ const HouseBooking = ({ navigation }) => {
                             <ActivityIndicator size={'large'} color={appColors.lightRed} />
                             <Text style={styles.loading_txt}>Please wait..</Text>
                         </View>
-                        : <FlatList
+                        :
+                        <FlatList
                             data={[{}, {}]}
                             scrollEnabled={false}
                             // keyExtractor={(index) => index.toString()}

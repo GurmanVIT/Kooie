@@ -1,10 +1,10 @@
 import * as React from "react";
 import Svg, { Path } from "react-native-svg";
 
-const ArrowRightIcon = () => (
-    <Svg xmlns="http://www.w3.org/2000/svg" fill="none">
+const ArrowRightIcon = (props) => (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={props?.size && props?.size} height={props?.size && props?.size} fill="none">
         <Path
-            stroke="#6E6E73"
+            stroke={props?.color ? props?.color : "#6E6E73"}
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeMiterlimit={10}

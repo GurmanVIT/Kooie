@@ -2,13 +2,13 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { ClipPath, Defs, G, Path, Rect, Svg } from 'react-native-svg'
 
-const House = ({ color }) => {
+const House = ({ color, size }) => {
 
     return (
         <Svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
+            width={size ? size : "32"}
+            height={size ? size : "32"}
             viewBox="0 0 32 32"
             fill="none">
             <G clip-path="url(#clip0_113_1470)">
