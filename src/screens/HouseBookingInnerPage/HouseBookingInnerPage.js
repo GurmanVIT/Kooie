@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useRef, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import SearchBottomIcon from '../../assets/svg/SearchBottomIcon';
@@ -14,11 +14,28 @@ import MeterIcon from '../../assets/svg/MeterIcon';
 import LandSize from '../../assets/svg/LandSize';
 import Calculater from '../../assets/svg/Calculater';
 import ArrowRightIcon from '../../assets/svg/ArrowRightIcon';
+import Deck from '../../assets/svg/Deck';
+import Courtyard from '../../assets/svg/Courtyard';
+import SpaIcon from '../../assets/svg/SpaIcon';
+import Video from 'react-native-video';
+import ArrowUp from '../../assets/svg/ArrowUp';
+import MapView, { Marker } from 'react-native-maps';
+import PhoneIcon from '../../assets/svg/PhoneIcon';
+import MailIcon from '../../assets/svg/MailIcon';
+import Images from '../theme/Images';
+import TransparentHeart from '../../assets/svg/TransparentHeart';
+import Calender from '../../assets/svg/Calender';
+import Clock from '../../assets/svg/Clock';
+import ArrowDown from '../../assets/svg/ArrowDown';
+
+
+
 
 const HouseBookingInnerPage = ({ navigation }) => {
 
     const [active, setActive] = useState(0);
     const [expanded, setExpanded] = useState(false);
+    const [floorExpand, setFloorExpand] = useState(false);
 
 
     const [currentIndex, setCurrentIndex] = useState(0); // To keep track of the current index
@@ -48,6 +65,12 @@ const HouseBookingInnerPage = ({ navigation }) => {
         itemVisiblePercentThreshold: 50,
     };
 
+    const propertyLocation = {
+        latitude: 30.7113397,
+        longitude: 76.6901766,
+        latitudeDelta: 0.005,
+        longitudeDelta: 0.005,
+    };
 
 
     return (
@@ -91,7 +114,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                         </View>
                     </View>
 
-                    <View style={{ paddingHorizontal: 16, marginBottom: scale(10) }}>
+                    <View style={{ paddingHorizontal: 16, marginBottom: scale(20) }}>
 
                         <View style={styles.sections}>
                             <Text style={styles.text_14}>For Sale $900,000 - $990,000</Text>
@@ -174,7 +197,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                     <Calculater size={scale(20)} color={appColors.red} />
                                     <View>
                                         <Text style={styles.text_13}>$4,709/month</Text>
-                                        <Text>estimated repayment</Text>
+                                        <Text style={styles.para_}>estimated repayment</Text>
                                     </View>
                                 </View>
                                 <TouchableOpacity style={styles.calculateButton}>
@@ -216,17 +239,271 @@ const HouseBookingInnerPage = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
 
-                        <View style={styles.line__} />
-
                         <View style={styles.sections}>
                             <Text style={styles.text_14}>Amenities</Text>
+                            <View style={styles.keysContainer}>
+                                <View style={styles.itemContainer}>
+                                    <View style={styles.iconContainer}>
+                                        <Deck size={scale(20)} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>{'Deck'}</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.itemContainer}>
+                                    <View style={styles.iconContainer}>
+                                        <Courtyard size={scale(20)} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>{'Court yard'}</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.itemContainer}>
+                                    <View style={styles.iconContainer}>
+                                        <SpaIcon size={scale(20)} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>{'Inside Spa'}</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.itemContainer}>
+                                    <View style={styles.iconContainer}>
+                                        <SpaIcon size={scale(20)} />
+                                    </View>
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>{'Outside Spa'}</Text>
+                                    </View>
+                                </View>
+
+
+
+                            </View>
+
+
+
                         </View>
 
                         <View style={styles.line__} />
 
+                        <View style={styles.sections}>
+                            <Text style={styles.text_14}>Video</Text>
+                            <View style={styles.videoContainer}>
+                                <Video
+                                    source={{ uri: 'https://www.w3schools.com/html/mov_bbb.mp4' }} // Can be a URL or a local file.
+                                    style={styles.video}
+                                    controls={true}
+                                    resizeMode="contain"
+                                    paused={false}
+                                />
+                            </View>
+                        </View>
+
+                        <View style={styles.sections}>
+                            <Text style={styles.text_14}>Floor Plans</Text>
+                            <View style={{ backgroundColor: appColors.borderColor, borderRadius: scale(10), gap: scale(10) }}>
+                                <Pressable style={[styles.row_between, { padding: scale(15) }]} onPress={() => setFloorExpand(!floorExpand)}>
+                                    <Text style={styles.text_13}>Blue prints</Text>
+                                    {
+                                        floorExpand ?
+                                            <ArrowUp size={scale(18)} />
+                                            : <ArrowDown size={scale(18)} />
+                                    }
+                                </Pressable>
+                                <View style={[styles.line__, { backgroundColor: appColors.lightGrey, alignSelf: 'center', width: '90%' }]} />
+                                {floorExpand &&
+                                    <FlatList
+                                        data={[{}, {}]}
+                                        scrollEnabled={false}
+                                        renderItem={({ item, index }) => {
+                                            return (
+                                                <>
+                                                    <Image source={IMAGES.blueMap} style={styles.bluemapImage} resizeMode='contain' />
+                                                    <View style={styles.indexContainer}>
+                                                        <Text style={styles.indexText}>{`${index + 1} Floor`}</Text>
+                                                    </View>
+                                                </>
+                                            )
+                                        }}
+                                    />}
+                            </View>
+                        </View>
+
+                        <View style={styles.line__} />
+
+                        {/* location */}
+                        <View style={styles.sections}>
+                            <Text style={styles.text_14}>Location</Text>
+                            <View style={[styles.container,]}>
+                                <MapView
+                                    style={styles.video}
+                                    initialRegion={propertyLocation}
+                                >
+                                    <Marker coordinate={propertyLocation} />
+                                </MapView>
+                            </View>
+                        </View>
 
 
+                        <View style={styles.sections}>
+                            <Text style={styles.text_14}>Inspections</Text>
+                            <Text style={styles.para_}>Get notified of any changes or cancellations by adding an inspection to your plan.</Text>
 
+                            <View style={[styles.row_between, { marginTop: scale(10) }]}>
+                                <View>
+                                    <Text style={styles.text_13}>Saturday 8 June</Text>
+                                    <Text style={styles.para_}>10:00am-10:30am</Text>
+                                </View>
+                                <TouchableOpacity style={styles.calculateButton}>
+                                    <Text style={styles.text_13}>Add to plan</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <TouchableOpacity style={styles.toggleButton}>
+                                <Text style={styles.text_12}>Request another time</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center' }}>
+                                <Text style={styles.text_11}>View my inspection plan</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.line__} />
+
+                        <View style={styles.sections}>
+                            <Text style={styles.text_14}>Nearby schools</Text>
+
+                            <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
+                                <View>
+                                    <Text style={styles.text_12}>Cornell High School</Text>
+                                    <Text style={styles.para_}>ndependent | Unknown</Text>
+                                </View>
+                                <View style={styles.row_}>
+                                    <Text style={styles.text_12}>348 m</Text>
+                                    <ArrowRightIcon size={scale(20)} />
+                                </View>
+                            </View>
+                            <View style={styles.line__} />
+                            <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
+                                <View>
+                                    <Text style={styles.text_12}>International Grammar School</Text>
+                                    <Text style={styles.para_}>ndependent | Unknown</Text>
+                                </View>
+                                <View style={styles.row_}>
+                                    <Text style={styles.text_12}>625 m</Text>
+                                    <ArrowRightIcon size={scale(20)} />
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={styles.sections}>
+                            <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
+                                <View style={{ width: '90%', }}>
+                                    <Text style={styles.text_14}>Notes</Text>
+                                </View>
+                                <View style={styles.row_}>
+                                    <ArrowRightIcon size={scale(20)} />
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={styles.line__} />
+
+                        <View style={styles.sections}>
+                            <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
+                                <View style={{ width: '90%', }}>
+                                    <Text style={styles.text_14}>Sales Results</Text>
+                                    <Text style={styles.para_}>View the latest sales and auction results</Text>
+                                </View>
+                                <View style={styles.row_}>
+                                    <ArrowRightIcon size={scale(20)} />
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={styles.line__} />
+
+                        <View style={styles.sections}>
+                            <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
+                                <View style={{ width: '90%', }}>
+                                    <Text style={styles.text_14}>Chippendale suburb profile</Text>
+                                    <Text style={styles.para_}>Elevate your property journey with the latest Chippendale market insights.</Text>
+                                </View>
+                                <View style={styles.row_}>
+                                    <ArrowRightIcon size={scale(20)} />
+                                </View>
+                            </View>
+                        </View>
+                        <View style={styles.line__} />
+
+                        <View style={styles.sections}>
+                            <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
+                                <View style={{ width: '50%', }}>
+                                    <Text style={styles.text_14}>Contact the agent</Text>
+                                </View>
+                                <View style={styles.row_}>
+                                    <Pressable style={styles.contectButton}>
+                                        <PhoneIcon size={scale(20)} />
+                                    </Pressable>
+                                    <Pressable style={styles.contectButton}>
+                                        <MailIcon size={scale(20)} />
+                                    </Pressable>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={styles.line__} />
+
+                        <View style={styles.sections}>
+                            <Text style={styles.text_14}>Similar properties</Text>
+
+                            <FlatList data={[{}, {}, {}, {}]}
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        <View style={{ borderWidth: 1, borderColor: appColors.offWhite, borderRadius: scale(10), marginRight: scale(10) }}>
+                                            <TouchableOpacity>
+                                                <ImageBackground
+                                                    style={styles.propBgStyle}
+                                                    resizeMode="stretch"
+                                                    source={Images.house}
+                                                >
+                                                    <View style={{ position: 'absolute', right: scale(15), top: scale(15) }}>
+                                                        <TransparentHeart />
+                                                    </View>
+                                                    <Text style={styles.residentialStyle}>RESIDENTIAL</Text>
+                                                </ImageBackground>
+                                            </TouchableOpacity>
+                                            <View style={{ padding: 14, gap: scale(5) }}>
+                                                <Text style={styles.text_13}>2018 Vision SF50</Text>
+                                                <Text style={styles.text_12}>For Sale $900,000 - $990,000 </Text>
+                                                <Text style={styles.para_}>21 Gladswood Gardens, Double Bay NSW 2028</Text>
+                                                <View style={{ marginVertical: 8, flexDirection: 'row', }}>
+                                                    <View style={{ flexDirection: 'row', gap: scale(5) }}>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(5) }}>
+                                                            <View style={{ width: scale(20), height: scale(20), }}>
+                                                                <Calender />
+                                                            </View>
+                                                            <Text style={[styles.text_13,]}>2018</Text>
+                                                        </View>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(5) }}>
+                                                            <View style={{ width: scale(20), height: scale(20), }}>
+                                                                <Clock />
+                                                            </View>
+                                                            <Text style={[styles.text_13,]}>690 hrs</Text>
+                                                        </View>
+                                                    </View>
+                                                </View>
+                                                <View>
+                                                    <Text style={styles.para_}>Inspection : Sat 8 Jun</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )
+                                }}
+                            />
+                        </View>
 
 
                         {/* end */}
@@ -234,6 +511,15 @@ const HouseBookingInnerPage = ({ navigation }) => {
 
                 </View>
             </ScrollView >
+            <View style={styles.footer}>
+                <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.black }]}>
+                    <Text style={styles.ftrBtnTxt}>Enquire</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.red }]}>
+                    <Text style={styles.ftrBtnTxt}>Call</Text>
+                </TouchableOpacity>
+            </View>
         </View >
     );
 };
@@ -252,6 +538,16 @@ const styles = StyleSheet.create({
         marginTop: 16,
         paddingHorizontal: 16
     },
+    text_11: {
+        fontSize: scale(11),
+        fontWeight: '500',
+        color: appColors.black
+    },
+    text_12: {
+        fontSize: scale(12),
+        fontWeight: '500',
+        color: appColors.black
+    },
     text_13: {
         fontSize: scale(13),
         fontWeight: '600',
@@ -262,12 +558,18 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: appColors.black
     },
+    text_15: {
+        color: appColors.black,
+        fontWeight: '600',
+        fontSize: scale(15),
+    },
 
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
+
     imageContainer: {
         width: Dimensions.get('window').width, // Full width
         height: scale(230),
@@ -288,8 +590,8 @@ const styles = StyleSheet.create({
     },
     indexContainer: {
         position: 'absolute',
-        bottom: scale(10),
-        right: scale(20),
+        bottom: scale(15),
+        right: scale(25),
         justifyContent: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
         paddingHorizontal: scale(10),
@@ -353,7 +655,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: scale(12),
-        color: '#333',
+        color: appColors.grey,
     },
     value: {
         fontSize: scale(11),
@@ -396,4 +698,72 @@ const styles = StyleSheet.create({
         fontSize: scale(11),
         fontWeight: 'bold',
     },
+
+    videoContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    video: {
+        width: '100%',
+        height: scale(200),
+        borderRadius: 10,
+        backgroundColor: 'black'
+
+    },
+    bluemapImage: {
+        width: '100%',
+        height: scale(200),
+        marginBottom: scale(10)
+    },
+    contectButton: {
+        backgroundColor: appColors.red,
+        width: scale(35),
+        height: scale(35),
+        borderRadius: scale(35 / 2),
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    residentialStyle: {
+        fontSize: scale(10),
+        fontWeight: '600',
+        backgroundColor: appColors.white,
+        color: appColors.black,
+        paddingHorizontal: scale(10),
+        paddingVertical: scale(5),
+        borderRadius: scale(20),
+        textAlign: 'center',
+        borderWidth: 1,
+        borderColor: appColors.grey,
+        position: 'absolute',
+        bottom: scale(10),
+        left: scale(10),
+    },
+    propBgStyle: {
+        width: '100%',
+        height: scale(200),
+        borderTopRightRadius: scale(10),
+        borderTopLeftRadius: scale(10)
+    },
+    footer: {
+        height: scale(60),
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: moderateScale(16),
+        paddingVertical: verticalScale(5)
+    },
+    ftrBtn: {
+        height: scale(45),
+        width: '45%',
+        borderRadius: scale(45 / 2),
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    ftrBtnTxt: {
+        color: appColors.white,
+        fontSize: scale(13),
+        fontWeight: '600'
+    }
 });
