@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { appColors } from '../../utils/appColors';
-import BackIcon from '../../assets/svg/BackIcon';
 import ArrowRightIcon from '../../assets/svg/ArrowRightIcon';
 import { ProfileFooter, ProfileHeader } from '../../components';
 import { moderateScale } from 'react-native-size-matters';
@@ -10,13 +9,6 @@ const RenterProfile = ({ navigation }) => {
 
     return (
         <View style={styles.containerStyle}>
-            {/* <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
-                <TouchableOpacity style={styles.backIconStyle} onPress={() => navigation.goBack()}>
-                    <BackIcon />
-                </TouchableOpacity>
-                <Text style={styles.collectionStyle}>Profile</Text>
-
-            </View> */}
             <ProfileHeader navigation={navigation} title={'Profile'} />
             <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: 20 }}>
@@ -66,6 +58,7 @@ const RenterProfile = ({ navigation }) => {
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
+
                     <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('EmergencyContact')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Emergency contact</Text>
                         <View style={{ width: 24, height: 24 }}>
@@ -91,21 +84,21 @@ const RenterProfile = ({ navigation }) => {
                         application.
                     </Text>
 
-                    <TouchableOpacity style={[styles.enquiredStyle, { marginTop: 20 }]} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={[styles.enquiredStyle, { marginTop: 20 }]} onPress={() => navigation.navigate('People')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>People</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Pets')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Pets</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('')}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('UtilityConnectionService')}>
                         <Text style={{ color: appColors.black, flex: 1, }}>Utility connection service</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />

@@ -512,7 +512,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                 </View>
             </ScrollView >
             <View style={styles.footer}>
-                <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.black }]}>
+                <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.black }]} onPress={() => navigation.navigate('Enquiry')}>
                     <Text style={styles.ftrBtnTxt}>Enquire</Text>
                 </TouchableOpacity>
 
