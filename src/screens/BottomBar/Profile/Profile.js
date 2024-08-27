@@ -35,7 +35,7 @@ const Profile = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
 
-                    <View style={styles.enquiredStyle}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('MyFinance')}>
                         <View style={styles.profileIconStyle}>
                             <FinanceIcon />
                         </View>
@@ -46,9 +46,9 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.enquiredStyle}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Guides')}>
                         <View style={styles.profileIconStyle}>
                             <GuidesIcon />
                         </View>
@@ -59,9 +59,9 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.enquiredStyle}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('ExploreSuburb')}>
                         <View style={styles.profileIconStyle}>
                             <ExploreSuburb />
                         </View>
@@ -72,9 +72,9 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.enquiredStyle}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('RentalApplications')}>
                         <View style={styles.profileIconStyle}>
                             <RentalApplicationIcon />
                         </View>
@@ -85,9 +85,9 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </View>
+                    </TouchableOpacity>
 
-                    <View style={styles.enquiredStyle}>
+                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Enquiry')}>
                         <View style={styles.profileIconStyle}>
                             <ListingIcon />
                         </View>
@@ -98,7 +98,7 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </View>

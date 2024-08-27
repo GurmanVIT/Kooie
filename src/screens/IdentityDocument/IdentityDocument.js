@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
 import { appColors } from '../../utils/appColors';
 import { ProfileFooter, ProfileHeader } from '../../components';
 import AdPhoto from '../../assets/svg/AdPhoto';

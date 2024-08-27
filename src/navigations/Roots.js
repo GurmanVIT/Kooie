@@ -1,6 +1,5 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/Splash';
 import StartingScreen from '../screens/StartingScreen/StartingScreen';
@@ -24,6 +23,18 @@ import Employment from '../screens/Employment/Employment';
 import Income from '../screens/Income/Income';
 import IdentityDocument from '../screens/IdentityDocument/IdentityDocument';
 import EmergencyContact from '../screens/EmergencyContact/EmergencyContact';
+import People from '../screens/People/People';
+import Pets from '../screens/Pets/Pets';
+import UtilityConnectionService from '../screens/UtilityConnectionService/UtilityConnectionService';
+import MyFinance from '../screens/MyFinance/MyFinance';
+import Preferences from '../screens/Preferences/Preferences';
+import MyFinanceLink from '../screens/MyFinanceLink/MyFinanceLink';
+import HomeLoan from '../screens/HomeLoan/HomeLoan';
+import LoginHomeLoan from '../screens/LoginHomeLoan/LoginHomeLoan';
+import Guides from '../screens/Guides/Guides';
+import ExploreSuburb from '../screens/ExploreSuburb/ExploreSuburb';
+import RentalApplications from '../screens/RentalApplications/RentalApplications';
+import Enquiry from '../screens/Enquiry/Enquiry';
 
 const Stack = createNativeStackNavigator();
 
@@ -74,6 +85,18 @@ const Roots = () => {
                     <Stack.Screen name="Income" component={Income} />
                     <Stack.Screen name="IdentityDocument" component={IdentityDocument} />
                     <Stack.Screen name="EmergencyContact" component={EmergencyContact} />
+                    <Stack.Screen name="People" component={People} />
+                    <Stack.Screen name="Pets" component={Pets} />
+                    <Stack.Screen name="UtilityConnectionService" component={UtilityConnectionService} />
+                    <Stack.Screen name="MyFinance" component={MyFinance} />
+                    <Stack.Screen name="Preferences" component={Preferences} />
+                    <Stack.Screen name="MyFinanceLink" component={MyFinanceLink} />
+                    <Stack.Screen name="HomeLoan" component={HomeLoan} />
+                    <Stack.Screen name="LoginHomeLoan" component={LoginHomeLoan} />
+                    <Stack.Screen name="Guides" component={Guides} />
+                    <Stack.Screen name="ExploreSuburb" component={ExploreSuburb} />
+                    <Stack.Screen name="RentalApplications" component={RentalApplications} />
+                    <Stack.Screen name="Enquiry" component={Enquiry} />
                 </Stack.Group>
             }
 
