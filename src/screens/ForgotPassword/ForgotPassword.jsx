@@ -1,18 +1,23 @@
-import { ActivityIndicator, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useRef, useState } from 'react'
 import { AuthContext } from '../../Contexts/authContext';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
+import { BASE_URL } from '../../config/config';
+import { useNavigation } from '@react-navigation/native';
 
-const ForgotPassword = ({ navigation }) => {
+const ForgotPassword = ({ }) => {
+    const navigation = useNavigation()
     const { isAuthenticated, isLoading, checkToken } = useContext(AuthContext);
 
 
     const inputEmailRef = useRef(null);
     const inputPassRef = useRef(null);
     const [toggleCheckBox, setToggleCheckBox] = useState(false);
-    const [isEmail, setEmail] = useState("");
-    const [isPassword, setPassword] = useState("");
+    const [isEmail, setEmail] = useState("garry.jstech@gmail.com");
+    const [isOTP, setOTP] = useState("12345");
+    const [isPassword, setPassword] = useState("12345678");
+    const [isConfirmPassword, setConfirmPassword] = useState("12345678");
     const [loading, setLoading] = useState(false)
 
 
@@ -37,12 +42,74 @@ const ForgotPassword = ({ navigation }) => {
         // Cleanup the interval when the component unmounts
         return () => clearInterval(intervalId);
     }
-    console.log({ timeLeft });
+    // console.log({ timeLeft });
 
-    const submitForgot = async (params) => {
+    const submitForgot = async () => {
+        const formdata = new FormData();
+        formdata.append("email", isEmail);
+        formdata.append("otp", isOTP);
+        formdata.append("password", isPassword);
+        formdata.append("confirm_password", isConfirmPassword);
+
+        const requestOptions = {
+            method: "POST",
+            body: formdata,
+            redirect: "follow"
+        };
+
+        setLoading(true)
+        fetch(`${BASE_URL}/forgetpassword`, requestOptions).then((response) => response.json())
+            .then(async (result) => {
+                console.log(result);
+
+                if (result.success === '200') {
+                    navigation.goBack()
+                    Alert.alert(result?.message)
+                    setLoading(false)
+                } else {
+                    Alert.alert(result?.message)
+                    setLoading(false)
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                setLoading(false)
+
+            });
 
     }
 
+
+
+
+
+    const sendOTP = async () => {
+
+        if (isEmail === undefined || isEmail === null || isEmail === '') {
+            return Alert.alert('Please enter your email!')
+        }
+
+
+        const formdata = new FormData();
+        formdata.append("email", isEmail);
+
+        const requestOptions = {
+            method: "POST",
+            body: formdata,
+        };
+
+        fetch(`${BASE_URL}/verfy/email`, requestOptions).then((response) => response.json())
+            .then((result) => {
+                console.log(result?.otp)
+                if (result?.status === "200") {
+                    TimeCheck()
+                    Alert.alert(result?.message)
+                } else {
+                    Alert.alert(result?.message)
+                }
+            })
+            .catch((error) => console.error(error.message));
+    }
 
     return (
         <View style={styles.containerStyle}>
@@ -62,7 +129,7 @@ const ForgotPassword = ({ navigation }) => {
                         value={isEmail}
                         onChangeText={(val) => setEmail(val)}
                     />
-                    <TouchableOpacity style={styles.verifyButton} onPress={TimeCheck} disabled={!(timeLeft === "00:00")}>
+                    <TouchableOpacity style={styles.verifyButton} onPress={sendOTP} disabled={!(timeLeft === "00:00")}>
                         <Text style={{ color: appColors.white, fontSize: 14, fontWeight: 'bold' }}>{timeLeft === "00:00" ? "Send OTP" : timeLeft}</Text>
                     </TouchableOpacity>
                 </View>
@@ -72,8 +139,8 @@ const ForgotPassword = ({ navigation }) => {
                     style={styles.inputStyle}
                     placeholder="OTP"
                     placeholderTextColor={appColors.placeholderColor}
-                    value={''}
-                    onChangeText={(val) => setEmail(val)}
+                    value={isOTP}
+                    onChangeText={(val) => setOTP(val)}
                 />
                 <TextInput
                     ref={inputPassRef}
@@ -89,8 +156,8 @@ const ForgotPassword = ({ navigation }) => {
                     placeholder="Confirm Password"
                     placeholderTextColor={appColors.placeholderColor}
                     style={styles.inputStyle}
-                    value={isPassword}
-                    onChangeText={(val) => setPassword(val)}
+                    value={isConfirmPassword}
+                    onChangeText={(val) => setConfirmPassword(val)}
                     secureTextEntry
                 />
 

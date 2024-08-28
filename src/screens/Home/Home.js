@@ -7,6 +7,7 @@ import HeartIcon from '../../assets/svg/HeartIcon';
 import PropertyIcon from '../../assets/svg/PropertyIcon';
 import AgentImage from '../../assets/svg/AgentImage';
 import RedSearchIcon from '../../assets/svg/RedSearchIcon';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 // import { Ionicons } from '@react-native-vector-icons';
 
 
@@ -44,7 +45,7 @@ const Home = ({ navigation }) => {
                             onChangeText={setSearch}
                             value={search}
                         />
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('HouseBooking', search)}>
                             <RedSearchIcon />
                         </TouchableOpacity>
                         {/* <Ionicons name="house" color="#ff0000" size={20} /> */}
@@ -52,9 +53,10 @@ const Home = ({ navigation }) => {
                     </View>
                 </ImageBackground>
 
-                <View style={{ padding: 16 }}>
+                <View style={{ paddingHorizontal: moderateScale(16) }}>
+
                     <View style={styles.switchContainer}>
-                        <Text style={styles.label}>Recent searches</Text>
+                        <Text style={styles.text_14}>Recent searches</Text>
                         <Switch
                             trackColor={{ false: '#edf3f6', true: '#FF474C' }}
                             thumbColor={isEnabled ? '#fff' : '#fff'}
@@ -64,42 +66,44 @@ const Home = ({ navigation }) => {
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.iconTextStyle} onPress={() => navigation.navigate('ResentSearch')}>
-                        <View style={{ flexDirection: 'row', gap: 10 }}>
-                            <View style={{ width: 44, height: 44 }}>
-                                <SearchIcon />
+                    {isEnabled &&
+                        <TouchableOpacity style={styles.iconTextStyle} onPress={() => navigation.navigate('ResentSearch')}>
+                            <View style={{ flexDirection: 'row', gap: scale(5), alignItems: 'center' }}>
+                                <View style={{ width: scale(40), height: scale(40) }}>
+                                    <SearchIcon />
+                                </View>
+                                <View>
+                                    <Text style={styles.text_12}>Sydney, NSW 2000</Text>
+                                    <Text style={styles.para_}>Townhouse · $100k-$500k</Text>
+                                </View>
                             </View>
-                            <View>
-                                <Text style={{ color: appColors.black }}>Sydney, NSW 2000</Text>
-                                <Text style={{ color: appColors.grey, fontSize: 12 }}>Townhouse · $100k-$500k</Text>
+                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ width: scale(20), height: scale(20) }}>
+                                    <HeartIcon />
+                                </View>
+                                <Text style={styles.text_12}>Save</Text>
                             </View>
-                        </View>
-                        <View>
-                            <View style={{ width: 24, height: 24 }}>
-                                <HeartIcon />
-                            </View>
-                            <Text style={{ fontSize: 12 }}>Save</Text>
-                        </View>
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    }
 
-                    <Text style={{ marginTop: 20, color: appColors.black, fontSize: 18, fontWeight: '600' }}>Suggestions for you</Text>
+                    <Text style={styles.text_14}>Suggestions for you</Text>
 
                     <FlatList
                         data={DATA}
-                        style={{ marginTop: 12 }}
+                        style={{ marginVertical: verticalScale(10) }}
                         scrollEnabled={false}
+                        keyExtractor={item => (item.id).toString()}
                         renderItem={() => (
                             <View style={styles.propertyIconText}>
-                                <View style={{ width: 120, height: 80 }}>
+                                <View style={{ width: scale(100), height: scale(60) }}>
                                     <PropertyIcon />
                                 </View>
                                 <View style={{ marginLeft: 16, flex: 1 }}>
                                     <Text style={{ fontSize: 16, fontWeight: '600', color: appColors.black }}>Get an estimate</Text>
-                                    <Text>See how much a property is worth</Text>
+                                    <Text style={styles.para_}>See how much a property is worth</Text>
                                 </View>
                             </View>
                         )}
-                        keyExtractor={item => item.id}
                     />
 
                     <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Latest News</Text>
@@ -136,7 +140,7 @@ const Home = ({ navigation }) => {
                                 </View>
                                 <View>
                                     <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>How to Find a Good Real Estate Agent</Text>
-                                    <Text style={{ marginTop: 4, fontSize: 12 }}>Oct  24, 2023</Text>
+                                    <Text style={styles.para_}>Oct  24, 2023</Text>
                                 </View>
                             </View>
 
@@ -157,7 +161,7 @@ const Home = ({ navigation }) => {
                                 </View>
                                 <View>
                                     <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>How to Find a Good Real Estate Agent</Text>
-                                    <Text style={{ marginTop: 4, fontSize: 12 }}>Oct  24, 2023</Text>
+                                    <Text style={styles.para_}>Oct  24, 2023</Text>
                                 </View>
                             </View>
 
@@ -178,22 +182,30 @@ const styles = StyleSheet.create({
         backgroundColor: appColors.white,
     },
     switchContainer: {
-        alignItems: 'center',
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: "space-between",
-        marginBottom: 22
+        marginVertical: verticalScale(10)
     },
-    label: {
-        fontSize: 16,
+    text_14: {
+        fontSize: scale(14),
         color: appColors.black,
         fontWeight: '600',
-        marginBottom: 20,
+    },
+    text_12: {
+        color: appColors.black,
+        fontSize: scale(12),
+        fontWeight: '600'
+    },
+    para_: {
+        fontSize: scale(11),
+        color: appColors.black,
+        opacity: 0.5
     },
     iconTextStyle: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingBottom: 14,
-        borderBottomWidth: 2,
+        paddingVertical: scale(10),
         borderColor: appColors.lightGrey,
     },
     propertyIconText: {
@@ -220,5 +232,7 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         height: 40,
+        color: appColors.black,
+        fontSize: scale(13)
     },
 });

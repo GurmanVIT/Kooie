@@ -4,8 +4,8 @@ import Svg, { Rect, Path } from "react-native-svg"
 function ResentSearchIcon(props) {
     return (
         <Svg
-            width={96}
-            height={96}
+            width={props.size ? props.size : 96}
+            height={props.size ? props.size : 96}
             viewBox="0 0 96 96"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

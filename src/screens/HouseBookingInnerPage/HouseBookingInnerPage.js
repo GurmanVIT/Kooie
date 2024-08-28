@@ -27,15 +27,18 @@ import TransparentHeart from '../../assets/svg/TransparentHeart';
 import Calender from '../../assets/svg/Calender';
 import Clock from '../../assets/svg/Clock';
 import ArrowDown from '../../assets/svg/ArrowDown';
+import { useRoute } from '@react-navigation/native';
 
 
 
 
-const HouseBookingInnerPage = ({ navigation }) => {
-
+const HouseBookingInnerPage = ({ navigation, details }) => {
+    let route = useRoute()
+    const item = route?.params?.details;
     const [active, setActive] = useState(0);
     const [expanded, setExpanded] = useState(false);
     const [floorExpand, setFloorExpand] = useState(false);
+    // console.log({ item });
 
 
     const [currentIndex, setCurrentIndex] = useState(0); // To keep track of the current index
@@ -306,11 +309,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                             <View style={{ backgroundColor: appColors.borderColor, borderRadius: scale(10), gap: scale(10) }}>
                                 <Pressable style={[styles.row_between, { padding: scale(15) }]} onPress={() => setFloorExpand(!floorExpand)}>
                                     <Text style={styles.text_13}>Blue prints</Text>
-                                    {
-                                        floorExpand ?
-                                            <ArrowUp size={scale(18)} />
-                                            : <ArrowDown size={scale(18)} />
-                                    }
+                                    {floorExpand ? <ArrowUp size={scale(18)} /> : <ArrowDown size={scale(18)} />}
                                 </Pressable>
                                 <View style={[styles.line__, { backgroundColor: appColors.lightGrey, alignSelf: 'center', width: '90%' }]} />
                                 {floorExpand &&
@@ -535,8 +534,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: 16,
-        paddingHorizontal: 16
+        marginVertical: scale(10),
+        paddingHorizontal: scale(16)
     },
     text_11: {
         fontSize: scale(11),

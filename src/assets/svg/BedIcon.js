@@ -2,7 +2,6 @@ import * as React from "react"
 import Svg, { Path } from "react-native-svg"
 
 const BedIcon = (props, { color, size }) => {
-    console.log(color, size, props)
     return (
         <Svg xmlns="http://www.w3.org/2000/svg" fill="none" width={props?.size && props?.size} height={props?.size && props?.size} {...props}>
             <Path
