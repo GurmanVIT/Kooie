@@ -11,140 +11,220 @@ import BedIcon from '../../assets/svg/BedIcon';
 import Images from '../theme/Images';
 import TransparentHeart from '../../assets/svg/TransparentHeart';
 import { BASE_URL, IMAGE_URL } from '../../config/config';
-import dateFormat, { masks } from "dateformat";
+import dateFormat from "dateformat";
 import { AuthContext } from '../../Contexts/authContext';
 import { IMAGES } from '../../assets';
 import { scale } from 'react-native-size-matters';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import Heart from '../../assets/svg/Heart';
 
-
-
-
-
-
-const HouseBooking = ({ navigation }) => {
-    const { isLoading, checkToken, authToken, } = useContext(AuthContext);
-
-    let route = useRoute()
+const HouseBooking = () => {
+    const { userID, authToken } = useContext(AuthContext);
+    const navigation = useNavigation();
+    let route = useRoute();
     const item = route?.params;
 
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const [propData, setPropData] = useState([]);
     const [propCount, setPropCount] = useState(0);
     const [propSearch, setPropSearch] = useState('');
-    console.log('props-->', propSearch);
+    const [suggestions, setSuggestions] = useState([]);
+    // console.log('propData--------------------------------->', propData);
 
     useEffect(() => {
         if (item) {
-            setPropSearch(item)
-            fetchData(item)
+            setPropSearch(item?.location);
+            fetchData(item?.location);
         } else {
-            fetchData()
-
+            fetchData();
         }
-    }, []);
+    }, [item,]);
 
+    useEffect(() => {
+        getSuggestions();
+    }, [propSearch]);
 
-    const fetchData = async (locations) => {
-        setLoading(true)
+    const fetchData = async (location) => {
+        setLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
 
         const formdata = new FormData();
-        formdata.append("location", locations ? locations : '');
+        formdata.append("location", location || propSearch || '');
+        formdata.append("bedroom", item?.BedroomsCount || '');
+        formdata.append("bathroom", item?.BathroomsCount || '');
+        formdata.append("carspaces", item?.CarSpaceCount || '');
+        formdata.append("amount_range", item?.minSize || '');
+        formdata.append("maximum_amount", item?.maxSize || '');
 
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
             body: formdata,
-            redirect: "follow"
+            redirect: "follow",
         };
 
-        fetch(`${BASE_URL}/search/property`, requestOptions).then((response) => response.json())
-            .then(async (result) => {
+        try {
+            const response = await fetch(`${BASE_URL}/search/property`, requestOptions);
+            const result = await response.json();
+            if (result?.status === '200') {
+                setPropData(result?.datas);
+                setPropCount(result?.totalCount);
+            } else {
+                alert(result?.message);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                if (result?.status === '200') {
-                    setPropData(result?.totaldata)
-                    setPropCount(result?.totalCount)
-                    setLoading(false)
-                } else {
-                    alert(result?.message)
-                    setLoading(false)
-                }
-            })
-            .catch((error) => {
-                console.error(error)
-                setLoading(false)
-            });
-    }
+    const addFavourate = async (propertyId) => {
+        console.log(propertyId, '<--propertyId');
 
+        if (!propertyId) {
+            return alert('Somthing is wrong!')
+        }
+        setLoading(true);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
 
+        const formdata = new FormData();
+        formdata.append("userid", userID || '');
+        formdata.append("propertyid", propertyId || '');
 
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow",
+        };
 
+        try {
+            const response = await fetch(`${BASE_URL}/save/property`, requestOptions);
+            const result = await response.json();
+            // console.log('saveProperty,', result);
+
+            if (result?.status === '200') {
+                alert(result?.message);
+            } else {
+                alert(result?.message);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getSuggestions = async () => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("toSearch", propSearch);
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow",
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/suggested/search`, requestOptions);
+            const result = await response.json();
+            if (result?.Status === '200') {
+                setSuggestions(result?.data?.original?.cities || []);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const renderSuggestionItem = ({ item }) => (
+        <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSuggestionSelect(item)}>
+            <Text style={styles.suggestionText}>{item?.place_name}, {item?.state_name} ({item?.postcode})</Text>
+        </TouchableOpacity>
+    );
+
+    const handleSuggestionSelect = (item) => {
+        setPropSearch(`${item.place_name} [${item.postcode}]`);
+        setSuggestions([]);
+    };
 
     return (
         <View style={styles.containerStyle}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: '10%', }}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: '10%', height: scale(50) }}>
                     <BackIcon width={35} height={35} />
                 </TouchableOpacity>
-
-                <View style={styles.inputStyle}>
-
-                    <TextInput
-                        placeholder="sarching..."
-                        placeholderTextColor={appColors.placeholderColor}
-                        style={[styles.input_]}
-                        value={propSearch}
-                        onChangeText={(val) => setPropSearch(val)}
-                    />
-                    <TouchableOpacity style={{ height: '100%', width: '20%', alignItems: 'center', justifyContent: 'center', }} onPress={() => fetchData(propSearch)}>
-                        <SearchBottomIcon stroke={appColors.black} width={20} height={20} />
-                    </TouchableOpacity>
-
+                <View style={{ width: '75%', }}>
+                    <View style={styles.inputStyle}>
+                        <TextInput
+                            placeholder="Search suburb, postcode or state"
+                            placeholderTextColor={appColors.placeholderColor}
+                            style={[styles.input_]}
+                            value={propSearch}
+                            onChangeText={(val) => setPropSearch(val)}
+                        />
+                        <TouchableOpacity style={{ height: '100%', width: '20%', alignItems: 'center', justifyContent: 'center', }} onPress={() => fetchData()}>
+                            <SearchBottomIcon stroke={appColors.black} width={20} height={20} />
+                        </TouchableOpacity>
+                    </View>
+                    {suggestions.length > 0 && (
+                        <View style={styles.suggestionContainer}>
+                            <FlatList
+                                data={suggestions}
+                                renderItem={renderSuggestionItem}
+                                keyExtractor={(item) => item.id.toString()}
+                                style={styles.suggestionList}
+                            />
+                        </View>
+                    )}
                 </View>
-
                 <View style={{ width: '10%' }}>
                     <TouchableOpacity style={{ width: scale(30), height: scale(30), justifyContent: 'center', alignItems: 'center', padding: 5, borderRadius: 34 / 2 }} onPress={() => navigation.navigate('Filters')}>
                         <Image source={IMAGES.filter} style={styles.iconStyle} resizeMode='contain' />
-                        {/* <HeartBottomIcon stroke={appColors.grey} /> */}
                     </TouchableOpacity>
                 </View>
             </View>
 
-            {/* <View style={styles.tabStyle}>
-                <Text style={styles.textStyles}>Sort</Text>
-                <Text style={styles.textStyles}>Inspections</Text>
-                <Text style={styles.textStyles}>Map</Text>
-            </View> */}
-
-            <View style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
-                {propCount > 0 && <Text style={{ color: appColors.black, textAlign: 'right' }}>{propCount} records found!</Text>}
-                <View style={{ marginTop: 20 }}>
-                    {loading ?
-                        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '70%' }}>
-                            <ActivityIndicator size={'large'} color={appColors.lightRed} />
-                            <Text style={styles.loading_txt}>Please wait..</Text>
-                        </View>
-                        :
+            {/* Show loading indicator separately */}
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size={'large'} color={appColors.lightRed} />
+                    <Text style={styles.loading_txt}>Loading properties, please wait...</Text>
+                </View>
+            ) : (
+                <View style={{ flex: 1, paddingHorizontal: 16 }}>
+                    {propCount > 0 ? (
                         <FlatList
                             data={propData}
                             contentContainerStyle={styles.listContainer}
                             showsVerticalScrollIndicator={false}
                             renderItem={({ item, index }) => {
+                                console.log('itemitemitemitem', item?.property_id);
 
                                 return (
                                     <View style={{ borderWidth: 1, borderColor: appColors.offWhite, borderRadius: scale(10), marginBottom: scale(15), overflow: 'hidden' }} key={index}>
-                                        <TouchableOpacity onPress={() => navigation.navigate('HouseBookingInnerPage', { details: item?.propbasic_details })} >
+                                        <TouchableOpacity onPress={() => navigation.navigate('HouseBookingInnerPage', { item })} >
                                             <ImageBackground
                                                 style={styles.imgStyle}
                                                 resizeMode={(item?.cover_img) ? 'cover' : 'contain'}
                                                 source={(item?.cover_img) ? { uri: IMAGE_URL + item?.cover_img } : IMAGES.kooieBlackLogo}
                                             >
+                                                <TouchableOpacity style={{ width: scale(34), height: scale(34), padding: scale(5), borderRadius: scale(34 / 2), position: 'absolute', right: scale(10), top: scale(10), backgroundColor: appColors.white, alignItems: 'center', justifyContent: 'center' }} onPress={() => addFavourate(item?.property_id)}>
+                                                    {
+                                                        <Heart size={scale(24)} color={appColors.red} />
+                                                        // <HeartBottomIcon stroke={appColors.red} />
+                                                    }
+                                                </TouchableOpacity>
                                             </ImageBackground>
                                         </TouchableOpacity>
                                         <View style={{ padding: 14, }}>
-                                            <Text style={styles.text_16}>For Sale {(item?.from_price) && '$' + (item?.from_price)} - {(item?.to_price) && '$' + (item?.to_price)} </Text>
+                                            <Text style={styles.text_16}>For Sale {(item?.po_price) ? '$' + (item?.po_price) : (item?.from_price) && '$' + (item?.from_price)} {((item?.from_price) || (item?.to_price)) && ' - '} {(item?.to_price) && '$' + (item?.to_price)} </Text>
 
                                             <Text style={styles.para_}>{(item?.title) && (item?.title)}</Text>
 
@@ -171,12 +251,12 @@ const HouseBooking = ({ navigation }) => {
                                                     <Text style={styles.text_13}>{(item?.car_spaces) ? (item?.car_spaces) : 0}</Text>
                                                 </View>}
 
-                                                <View style={styles.row_}>
+                                                {(item?.propbasic_details[0]?.interior) && <View style={styles.row_}>
                                                     <View style={styles.icon_container}>
                                                         <MeterIcon />
                                                     </View>
-                                                    <Text style={styles.text_13}>600 m2</Text>
-                                                </View>
+                                                    <Text style={styles.text_13}>{(item?.propbasic_details[0]?.interior) && (item?.propbasic_details[0]?.interior)}</Text>
+                                                </View>}
                                             </View>
 
                                             <View>
@@ -187,11 +267,17 @@ const HouseBooking = ({ navigation }) => {
                                 )
                             }}
 
-                        />}
+                        />
 
+                    ) : (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={styles.loading_txt}>No properties found!</Text>
+                        </View>
+
+                    )}
                 </View>
-            </View >
-        </View >
+            )}
+        </View>
     );
 };
 
@@ -217,7 +303,7 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'space-between',
         marginVertical: scale(10),
         paddingHorizontal: scale(16),
@@ -235,7 +321,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: appColors.lightGrey,
         paddingHorizontal: 14,
-        width: '75%',
+        width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
         // marginLeft: 10,
@@ -252,6 +338,28 @@ const styles = StyleSheet.create({
         color: appColors.black,
         width: '85%',
         overflow: 'hidden'
+    },
+    suggestionContainer: {
+        position: 'absolute',
+        top: scale(50),
+        left: 0,
+        right: 0,
+        zIndex: 1
+    },
+    suggestionList: {
+        // marginTop: scale(10),
+        backgroundColor: appColors.white,
+        borderRadius: 8,
+        maxHeight: 200,
+    },
+    suggestionItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: appColors.lightGrey,
+
+    },
+    suggestionText: {
+        color: appColors.black,
     },
     tabStyle: {
         marginTop: 10,

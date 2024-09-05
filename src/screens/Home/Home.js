@@ -1,5 +1,5 @@
-import { FlatList, ImageBackground, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View, } from 'react-native';
-import React, { useState } from 'react';
+import { FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
 import SearchIcon from '../../assets/svg/SearchIcon';
@@ -8,15 +8,25 @@ import PropertyIcon from '../../assets/svg/PropertyIcon';
 import AgentImage from '../../assets/svg/AgentImage';
 import RedSearchIcon from '../../assets/svg/RedSearchIcon';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-// import { Ionicons } from '@react-native-vector-icons';
+import { AuthContext } from '../../Contexts/authContext';
+import { BASE_URL } from '../../config/config';
 
 
 
 
 
 const Home = ({ navigation }) => {
-
+    const { userID, authToken } = useContext(AuthContext);
     const [isEnabled, setIsEnabled] = useState(true);
+    const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [recentSearch, setRecentSearch] = useState([]);
+
+
+    // console.log('result', recentSearch);
+
+
+
 
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
@@ -25,8 +35,41 @@ const Home = ({ navigation }) => {
         { id: '2', title: 'Item 2' },
         { id: '3', title: 'Item 3' },
     ];
+    useEffect(() => { fetchData && fetchData(); }, []);
 
-    const [search, setSearch] = React.useState('');
+
+    const fetchData = async () => {
+        setLoading(true);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("user_id", userID);
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow"
+        };
+
+        fetch(`${BASE_URL}/get/recent/search`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result?.status === '200') {
+                    setRecentSearch(result?.data)
+                    setLoading(false);
+                } else {
+                    alert(result?.message);
+                    setLoading(false);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                setLoading(false);
+            });
+    };
 
     return (
         <View style={styles.containerStyle}>
@@ -36,7 +79,7 @@ const Home = ({ navigation }) => {
                     style={{ height: 200, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}
                     source={Images.country_img}
                 >
-                    <View style={styles.searchContainer}>
+                    <Pressable style={styles.searchContainer} onPress={() => navigation.navigate('HouseBooking', search)}>
                         {/* <RedSearchIcon /> */}
                         <TextInput
                             style={styles.input}
@@ -44,13 +87,14 @@ const Home = ({ navigation }) => {
                             placeholderTextColor="#aaa"
                             onChangeText={setSearch}
                             value={search}
+                            editable={false}
                         />
-                        <TouchableOpacity onPress={() => navigation.navigate('HouseBooking', search)}>
+                        <TouchableOpacity>
                             <RedSearchIcon />
                         </TouchableOpacity>
                         {/* <Ionicons name="house" color="#ff0000" size={20} /> */}
                         {/*  arrow-forward-circle-sharp  */}
-                    </View>
+                    </Pressable>
                 </ImageBackground>
 
                 <View style={{ paddingHorizontal: moderateScale(16) }}>
@@ -67,23 +111,27 @@ const Home = ({ navigation }) => {
                     </View>
 
                     {isEnabled &&
-                        <TouchableOpacity style={styles.iconTextStyle} onPress={() => navigation.navigate('ResentSearch')}>
-                            <View style={{ flexDirection: 'row', gap: scale(5), alignItems: 'center' }}>
-                                <View style={{ width: scale(40), height: scale(40) }}>
-                                    <SearchIcon />
+                        <>
+
+                            {recentSearch && <TouchableOpacity style={styles.iconTextStyle} onPress={() => navigation.navigate('HouseBooking', recentSearch)}>
+                                <View style={{ flexDirection: 'row', gap: scale(5), alignItems: 'center' }}>
+                                    <View style={{ width: scale(40), height: scale(40) }}>
+                                        <SearchIcon />
+                                    </View>
+                                    <View>
+                                        <Text style={styles.text_12}>{recentSearch?.location}</Text>
+                                        <Text style={styles.para_}>{recentSearch?.Property_subtype} · {recentSearch?.price_range}</Text>
+                                    </View>
                                 </View>
-                                <View>
-                                    <Text style={styles.text_12}>Sydney, NSW 2000</Text>
-                                    <Text style={styles.para_}>Townhouse · $100k-$500k</Text>
-                                </View>
-                            </View>
-                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                <View style={{ width: scale(20), height: scale(20) }}>
-                                    <HeartIcon />
-                                </View>
-                                <Text style={styles.text_12}>Save</Text>
-                            </View>
-                        </TouchableOpacity>
+                                {/* <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ width: scale(20), height: scale(20) }}>
+                                        <HeartIcon />
+                                    </View>
+                                    <Text style={styles.text_12}>Save</Text>
+                                </View> */}
+                            </TouchableOpacity>}
+
+                        </>
                     }
 
                     <Text style={styles.text_14}>Suggestions for you</Text>

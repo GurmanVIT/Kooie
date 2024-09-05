@@ -23,14 +23,14 @@ const Filters = ({ navigation }) => {
     const [saleMethod, setsaleMethod] = useState('All');
 
     const [isPriceChecked, setIsPriceChecked] = useState(false);
-    const [priceRange, setPriceRange] = useState([235, 2250]);
+    const [priceRange, setPriceRange] = useState([1000, 5000]);
 
     const onValuesChange = (values) => {
         setPriceRange(values);
     };
 
-    const [maxSize, setMaxSize] = useState(null);
     const [minSize, setMinSize] = useState(null);
+    const [maxSize, setMaxSize] = useState(null);
 
     const landSizeOptions = [
         { label: '100 sq ft', value: '100' },
@@ -39,6 +39,34 @@ const Filters = ({ navigation }) => {
         { label: '1000 sq ft', value: '1000' },
     ];
 
+    const resetFilter = async () => {
+        setPropertyTpe('All')
+        setBedroomsCount('Any')
+        setBathroomsCount('Any')
+        setCarSpaceCount('Any')
+        setconstructionStatus('All')
+        setsaleMethod('All')
+        setIsPriceChecked(false)
+        setPriceRange([200, 2000])
+        setMinSize(null)
+        setMaxSize(null)
+    };
+    const dataFilter = async () => {
+        let filterData = {
+            propertyTpe,
+            BedroomsCount,
+            BathroomsCount,
+            CarSpaceCount,
+            constructionStatus,
+            saleMethod,
+            isPriceChecked,
+            priceRange,
+            minSize,
+            maxSize
+        }
+
+        navigation.navigate('HouseBooking', filterData)
+    };
 
 
     return (
@@ -115,7 +143,7 @@ const Filters = ({ navigation }) => {
                     <Text style={styles.title_}>Price range</Text>
                     <View style={{ flex: 1, }}>
                         <Text style={styles.priceRangeText}>
-                            ${priceRange[0]}K to ${priceRange[1] / 1000}M
+                            ${priceRange[0]}k to ${priceRange[1] / 1000}M
                         </Text>
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <MultiSlider
@@ -133,14 +161,14 @@ const Filters = ({ navigation }) => {
                                 )}
                             />
                         </View>
-                        <View style={styles.checkboxContainer}>
+                        {/* <View style={styles.checkboxContainer}>
                             <Text style={styles.checkboxLabel}>Only show properties with a price</Text>
                             <CheckBox
                                 value={isPriceChecked}
                                 onValueChange={setIsPriceChecked}
                                 tintColors={{ true: appColors.red, false: '#e3e3e3' }}
                             />
-                        </View>
+                        </View> */}
                     </View>
                 </View>
 
@@ -150,37 +178,37 @@ const Filters = ({ navigation }) => {
                 <View style={styles.container}>
                     <Text style={styles.title_}>Bedrooms</Text>
                     <View style={{ flex: 1, gap: scale(10) }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
+                        <View style={styles.row_100}>
                             <TouchableOpacity style={[styles.barBox, { borderTopLeftRadius: 5, borderBottomLeftRadius: 5, borderLeftWidth: 1 }, BedroomsCount === 'Any' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('Any')}>
                                 <Text style={[styles.barBoxText, BedroomsCount === 'Any' && { color: appColors.white }]}>Any</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.barBox, BedroomsCount === 'Studio' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('Studio')}>
                                 <Text style={[styles.barBoxText, BedroomsCount === 'Studio' && { color: appColors.white }]}>Studio</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BedroomsCount === 'one' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('one')}>
-                                <Text style={[styles.barBoxText, BedroomsCount === 'one' && { color: appColors.white }]}>1</Text>
+                            <TouchableOpacity style={[styles.barBox, BedroomsCount === '1' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('1')}>
+                                <Text style={[styles.barBoxText, BedroomsCount === '1' && { color: appColors.white }]}>1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BedroomsCount === 'two' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('two')}>
-                                <Text style={[styles.barBoxText, BedroomsCount === 'two' && { color: appColors.white }]}>2</Text>
+                            <TouchableOpacity style={[styles.barBox, BedroomsCount === '2' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('2')}>
+                                <Text style={[styles.barBoxText, BedroomsCount === '2' && { color: appColors.white }]}>2</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BedroomsCount === 'three' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('three')}>
-                                <Text style={[styles.barBoxText, BedroomsCount === 'three' && { color: appColors.white }]}>3</Text>
+                            <TouchableOpacity style={[styles.barBox, BedroomsCount === '3' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('3')}>
+                                <Text style={[styles.barBoxText, BedroomsCount === '3' && { color: appColors.white }]}>3</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BedroomsCount === 'four' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('four')}>
-                                <Text style={[styles.barBoxText, BedroomsCount === 'four' && { color: appColors.white }]}>4</Text>
+                            <TouchableOpacity style={[styles.barBox, BedroomsCount === '4' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('4')}>
+                                <Text style={[styles.barBoxText, BedroomsCount === '4' && { color: appColors.white }]}>4</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 0, borderTopRightRadius: 5, borderBottomRightRadius: 5, }, BedroomsCount === 'five' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('five')}>
-                                <Text style={[styles.barBoxText, BedroomsCount === 'five' && { color: appColors.white }]}>5+</Text>
+                            <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 0, borderTopRightRadius: 5, borderBottomRightRadius: 5, }, BedroomsCount === '5' && { backgroundColor: appColors.black }]} onPress={() => setBedroomsCount('5')}>
+                                <Text style={[styles.barBoxText, BedroomsCount === '5' && { color: appColors.white }]}>5+</Text>
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.checkboxContainer}>
+                        {/* <View style={styles.checkboxContainer}>
                             <Text style={styles.checkboxLabel}>Select bedroom range</Text>
                             <CheckBox
                                 value={isPriceChecked}
                                 onValueChange={setIsPriceChecked}
                                 tintColors={{ true: appColors.red, false: '#e3e3e3' }}
                             />
-                        </View>
+                        </View> */}
                     </View>
                 </View>
 
@@ -190,25 +218,24 @@ const Filters = ({ navigation }) => {
                 <View style={styles.container}>
                     <Text style={styles.title_}>Bathrooms</Text>
                     <View style={{ flex: 1, }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
+                        <View style={styles.row_100}>
                             <TouchableOpacity style={[styles.barBox, { borderTopLeftRadius: 5, borderBottomLeftRadius: 5, borderLeftWidth: 1 }, BathroomsCount === 'Any' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('Any')}>
                                 <Text style={[styles.barBoxText, BathroomsCount === 'Any' && { color: appColors.white }]}>Any</Text>
                             </TouchableOpacity>
-
-                            <TouchableOpacity style={[styles.barBox, BathroomsCount === 'one' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('one')}>
-                                <Text style={[styles.barBoxText, BathroomsCount === 'one' && { color: appColors.white }]}>1</Text>
+                            <TouchableOpacity style={[styles.barBox, BathroomsCount === '1' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('1')}>
+                                <Text style={[styles.barBoxText, BathroomsCount === '1' && { color: appColors.white }]}>1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BathroomsCount === 'two' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('two')}>
-                                <Text style={[styles.barBoxText, BathroomsCount === 'two' && { color: appColors.white }]}>2</Text>
+                            <TouchableOpacity style={[styles.barBox, BathroomsCount === '2' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('2')}>
+                                <Text style={[styles.barBoxText, BathroomsCount === '2' && { color: appColors.white }]}>2</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BathroomsCount === 'three' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('three')}>
-                                <Text style={[styles.barBoxText, BathroomsCount === 'three' && { color: appColors.white }]}>3</Text>
+                            <TouchableOpacity style={[styles.barBox, BathroomsCount === '3' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('3')}>
+                                <Text style={[styles.barBoxText, BathroomsCount === '3' && { color: appColors.white }]}>3</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, BathroomsCount === 'four' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('four')}>
-                                <Text style={[styles.barBoxText, BathroomsCount === 'four' && { color: appColors.white }]}>4</Text>
+                            <TouchableOpacity style={[styles.barBox, BathroomsCount === '4' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('4')}>
+                                <Text style={[styles.barBoxText, BathroomsCount === '4' && { color: appColors.white }]}>4</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 0, borderTopRightRadius: 5, borderBottomRightRadius: 5, }, BathroomsCount === 'five' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('five')}>
-                                <Text style={[styles.barBoxText, BathroomsCount === 'five' && { color: appColors.white }]}>5+</Text>
+                            <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 0, borderTopRightRadius: 5, borderBottomRightRadius: 5, }, BathroomsCount === '5' && { backgroundColor: appColors.black }]} onPress={() => setBathroomsCount('5')}>
+                                <Text style={[styles.barBoxText, BathroomsCount === '5' && { color: appColors.white }]}>5+</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -221,25 +248,25 @@ const Filters = ({ navigation }) => {
                 <View style={styles.container}>
                     <Text style={styles.title_}>Car spaces</Text>
                     <View style={{ flex: 1, }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
+                        <View style={styles.row_100}>
                             <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 1, borderTopLeftRadius: 5, borderBottomLeftRadius: 5, }, CarSpaceCount === 'Any' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('Any')}>
                                 <Text style={[styles.barBoxText, CarSpaceCount === 'Any' && { color: appColors.white }]}>Any</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === 'one' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('one')}>
-                                <Text style={[styles.barBoxText, CarSpaceCount === 'one' && { color: appColors.white }]}>1</Text>
+                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === '1' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('1')}>
+                                <Text style={[styles.barBoxText, CarSpaceCount === '1' && { color: appColors.white }]}>1</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === 'two' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('two')}>
-                                <Text style={[styles.barBoxText, CarSpaceCount === 'two' && { color: appColors.white }]}>2</Text>
+                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === '2' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('2')}>
+                                <Text style={[styles.barBoxText, CarSpaceCount === '2' && { color: appColors.white }]}>2</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === 'three' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('three')}>
-                                <Text style={[styles.barBoxText, CarSpaceCount === 'three' && { color: appColors.white }]}>3</Text>
+                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === '3' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('3')}>
+                                <Text style={[styles.barBoxText, CarSpaceCount === '3' && { color: appColors.white }]}>3</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === 'four' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('four')}>
-                                <Text style={[styles.barBoxText, CarSpaceCount === 'four' && { color: appColors.white }]}>4</Text>
+                            <TouchableOpacity style={[styles.barBox, CarSpaceCount === '4' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('4')}>
+                                <Text style={[styles.barBoxText, CarSpaceCount === '4' && { color: appColors.white }]}>4</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 0, borderTopRightRadius: 5, borderBottomRightRadius: 5, }, CarSpaceCount === 'five' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('five')}>
-                                <Text style={[styles.barBoxText, CarSpaceCount === 'five' && { color: appColors.white }]}>5+</Text>
+                            <TouchableOpacity style={[styles.barBox, { borderLeftWidth: 0, borderTopRightRadius: 5, borderBottomRightRadius: 5, }, CarSpaceCount === '5' && { backgroundColor: appColors.black }]} onPress={() => setCarSpaceCount('5')}>
+                                <Text style={[styles.barBoxText, CarSpaceCount === '5' && { color: appColors.white }]}>5+</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -252,24 +279,27 @@ const Filters = ({ navigation }) => {
                 <View style={styles.container}>
                     <Text style={styles.title_}>Land size</Text>
                     <View style={{ flex: 1, width: '100%', flexDirection: 'row', alignItems: 'center' }}>
+
                         <View style={{ width: '50%', paddingRight: 10 }}>
-                            <Text style={styles.checkboxLabel}>Max</Text>
-                            <View style={styles.selectBoxStyle}>
-                                <RNPickerSelect
-                                    onValueChange={(value) => setMaxSize(value)}
-                                    items={landSizeOptions}
-                                    placeholder={{ label: "Select Max Size", value: null }}
-                                    style={pickerSelectStyles}
-                                />
-                            </View>
-                        </View>
-                        <View style={{ width: '50%', paddingLeft: 10 }}>
                             <Text style={styles.checkboxLabel}>Min</Text>
                             <View style={styles.selectBoxStyle}>
                                 <RNPickerSelect
                                     onValueChange={(value) => setMinSize(value)}
                                     items={landSizeOptions}
+                                    value={minSize}
                                     placeholder={{ label: "Select Min Size", value: null }}
+                                    style={pickerSelectStyles}
+                                />
+                            </View>
+                        </View>
+                        <View style={{ width: '50%', paddingLeft: 10 }}>
+                            <Text style={styles.checkboxLabel}>Max</Text>
+                            <View style={styles.selectBoxStyle}>
+                                <RNPickerSelect
+                                    onValueChange={(value) => setMaxSize(value)}
+                                    items={landSizeOptions}
+                                    value={maxSize}
+                                    placeholder={{ label: "Select Max Size", value: null }}
                                     style={pickerSelectStyles}
                                 />
                             </View>
@@ -321,7 +351,7 @@ const Filters = ({ navigation }) => {
                 <View style={styles.line_} />
 
                 {/* contract / offer */}
-                <View style={styles.container}>
+                {/* <View style={styles.container}>
                     <View style={[styles.checkboxContainer,]}>
                         <Text style={styles.checkboxLabel}>Exclude properties under contract/offer</Text>
                         <CheckBox
@@ -330,13 +360,13 @@ const Filters = ({ navigation }) => {
                             tintColors={{ true: appColors.red, false: '#e3e3e3' }}
                         />
                     </View>
-                </View>
+                </View> */}
                 <View style={styles.line_} />
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                    <TouchableOpacity style={styles.footerButton}>
+                    <TouchableOpacity style={styles.footerButton} onPress={resetFilter}>
                         <Text style={styles.title_}>Reset Filters</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.footerButton, { backgroundColor: appColors.red, }]}>
+                    <TouchableOpacity style={[styles.footerButton, { backgroundColor: appColors.red, }]} onPress={dataFilter}>
                         <Text style={{ fontSize: 14, fontWeight: '600', color: appColors.white }}>Search</Text>
                     </TouchableOpacity>
                 </View>
@@ -345,7 +375,7 @@ const Filters = ({ navigation }) => {
     )
 }
 
-export default Filters
+export default Filters;
 
 const styles = StyleSheet.create({
     containerStyle: {
@@ -373,6 +403,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%'
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     activeBox: {
         width: scale(60),

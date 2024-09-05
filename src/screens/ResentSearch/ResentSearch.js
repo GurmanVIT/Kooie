@@ -5,27 +5,37 @@ import SearchBottomIcon from '../../assets/svg/SearchBottomIcon';
 import LocationIcon from '../../assets/svg/LocationIcon';
 import ResentSearchIcon from '../../assets/svg/ResentSearchIcon';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import BackIcon from '../../assets/svg/BackIcon';
 
 const ResentSearch = ({ navigation }) => {
     const [activeTab, setActiveTab] = useState('recent')
+    const [propSearch, setPropSearch] = useState('');
     return (
         <View style={styles.containerStyle}>
-            <View style={styles.headSearchStyle}>
-                <View style={{ width: 30, height: 30, marginTop: 4 }}>
-                    <SearchBottomIcon stroke={appColors.grey} />
-                </View>
-                <Pressable style={{ width: '75%' }} onPress={() => navigation.navigate('HouseBooking')}>
-                    <TextInput
-                        style={{ color: appColors.grey, }}
-                        placeholder="Search"
-                        placeholderTextColor="#aaa"
-                        editable={false}
-                    />
-                </Pressable>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Text style={{ color: appColors.black }}>Cancel</Text>
+
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: '10%', }}>
+                    <BackIcon width={35} height={35} />
                 </TouchableOpacity>
+
+                <View style={styles.inputStyle}>
+
+                    <TextInput
+                        placeholder="sarching..."
+                        placeholderTextColor={appColors.placeholderColor}
+                        style={[styles.input_]}
+                        value={propSearch}
+                        onChangeText={(val) => setPropSearch(val)}
+                    />
+                    <TouchableOpacity style={{ height: '100%', width: '20%', alignItems: 'center', justifyContent: 'center', }} onPress={() => fetchData(propSearch)}>
+                        <SearchBottomIcon stroke={appColors.black} width={20} height={20} />
+                    </TouchableOpacity>
+
+                </View>
             </View>
+
+
+
             <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: verticalScale(15), alignItems: 'center' }}>
                     <TouchableOpacity style={styles.searchButton} onPress={() => navigation.navigate('HouseBooking')}>
@@ -76,13 +86,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: appColors.white,
     },
-    headSearchStyle: {
+    header: {
         flexDirection: 'row',
-        paddingHorizontal: 16,
         alignItems: 'center',
-        marginTop: 16,
-        borderBottomWidth: 1,
-        borderColor: appColors.lightGrey
+        justifyContent: 'space-between',
+        marginVertical: scale(10),
+        paddingHorizontal: scale(16),
+        width: '100%',
     },
     collectionStyle: {
         flex: 1,
@@ -138,5 +148,20 @@ const styles = StyleSheet.create({
         fontSize: scale(12),
         fontWeight: '500',
         color: appColors.black,
-    }
+    },
+    inputStyle: {
+        borderRadius: 8,
+        backgroundColor: appColors.lightGrey,
+        paddingHorizontal: 14,
+        width: '87%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        // marginLeft: 10,
+        height: scale(35)
+    },
+    input_: {
+        color: appColors.black,
+        width: '85%',
+        overflow: 'hidden'
+    },
 });

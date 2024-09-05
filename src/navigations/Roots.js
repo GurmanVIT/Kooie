@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/Splash';
@@ -38,6 +38,7 @@ import { AuthContext } from '../Contexts/authContext';
 import { ForgotPassword } from '../screens/ForgotPassword';
 import { Filters } from '../screens/HouseBooking';
 import { appColors } from '../utils/appColors';
+import { scale } from 'react-native-size-matters';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,7 +47,7 @@ const Stack = createNativeStackNavigator();
 const Roots = () => {
     const [accessToken, setAccessToken] = useState(null);
     const { isAuthenticated, isLoading, logout, checkToken } = useContext(AuthContext);
-    console.log("accessToken==>", accessToken);
+    // console.log("accessToken==>", accessToken);
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -59,7 +60,12 @@ const Roots = () => {
     }, [isLoading, isAuthenticated]);
 
     if (isLoading) {
-        return <ActivityIndicator size="large" color={appColors.red} />;
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={appColors.red} />
+                <Text style={styles.loading}>Please wait..</Text>
+            </View>
+        )
     }
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='SplashScreen'>
@@ -114,4 +120,16 @@ const Roots = () => {
 
 export default Roots
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: scale(5)
+    },
+    loading: {
+        color: appColors.grey,
+        fontSize: scale(12),
+
+    }
+})

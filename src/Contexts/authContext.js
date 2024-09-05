@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(null);
     const [userID, setuserID] = useState(null);
 
-    console.log({ authToken, userID });
+    // console.log({ authToken, userID });
 
 
     useEffect(() => {
@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
         checkToken();
     }, []);
-    // console.log({ authToken });
+    console.log({ authToken });
 
     const checkToken = async () => {
         try {
