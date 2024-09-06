@@ -38,7 +38,7 @@ import YoutubeIframe from 'react-native-youtube-iframe';
 import dateFormat, { masks } from "dateformat";
 import { differenceInHours, parseISO } from 'date-fns';
 import SvgUri from 'react-native-svg-uri';
-
+import SvgImage from '../../components/SvgImage';
 
 
 
@@ -94,6 +94,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
         setLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
+        console.log({ propID });
 
         const formdata = new FormData();
         formdata.append("id", propID);
@@ -111,7 +112,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
             .then(result => {
                 if (result?.status === '200') {
                     setPropData(result?.data);
-                    setSimillerProp(result?.data2)
+                    // setSimillerProp(result?.data2)
                     setRegion({
                         latitude: parseFloat(result?.data[0]?.latitude),
                         longitude: parseFloat(result?.data[0]?.longitude),
@@ -206,9 +207,11 @@ const HouseBookingInnerPage = ({ navigation }) => {
     };
     // console.log('propData && (propData[0]?.floorplane_link)', propData && (propData[0]?.floorplane_link).length > 0);
 
+    // console.log('propData------------------------------------------>', propData);
 
     return (
         <View style={styles.containerStyle}>
+
             <View style={styles.header_}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <BackIcon width={35} height={35} />
@@ -373,22 +376,19 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                         numColumns={2}
                                         scrollEnabled={false}
                                         renderItem={({ item, index }) => {
-
                                             return (
-                                                <View style={styles.itemContainer} key={index}>
-                                                    <View style={styles.iconContainer}>
-                                                        {/* <SvgUri
-                                                            width={scale(32)}
-                                                            height={scale(32)}
-                                                            // source={{ uri: 'http://thenewcode.com/assets/images/thumbnails/homer-simpson.svg' }}
-                                                            svgXmlData={IMAGE_URL + item?.icon_images}
-                                                        /> */}
-                                                        <Amenities size={scale(20)} color={appColors.red} />
-                                                    </View>
-                                                    <View style={styles.textContainer}>
-                                                        <Text style={styles.label} numberOfLines={2}>{item?.amenti_name}</Text>
-                                                    </View>
-                                                </View>
+                                                <>
+                                                    {item?.icon_images != null && (
+                                                        <View style={styles.itemContainer} key={index}>
+                                                            <View style={styles.iconContainer}>
+                                                                {/* <SvgImage url={item?.icon_images} />  Use SvgImage */}
+                                                            </View>
+                                                            <View style={styles.textContainer}>
+                                                                <Text style={styles.label} numberOfLines={2}>{item?.amenti_name}</Text>
+                                                            </View>
+                                                        </View>
+                                                    )}
+                                                </>
                                             );
                                         }}
                                         keyExtractor={(item, index) => index.toString()}

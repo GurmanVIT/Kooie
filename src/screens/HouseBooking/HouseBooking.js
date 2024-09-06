@@ -29,6 +29,7 @@ const HouseBooking = () => {
     const [propCount, setPropCount] = useState(0);
     const [propSearch, setPropSearch] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [selectedProperties, setSelectedProperties] = useState([]);
     // console.log('propData--------------------------------->', propData);
 
     useEffect(() => {
@@ -143,24 +144,40 @@ const HouseBooking = () => {
         }
     };
 
-    const renderSuggestionItem = ({ item }) => (
-        <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSuggestionSelect(item)}>
-            <Text style={styles.suggestionText}>{item?.place_name}, {item?.state_name} ({item?.postcode})</Text>
-        </TouchableOpacity>
-    );
+    const renderSuggestionItem = ({ item }) => {
+        const isSelected = selectedProperties.some(selectedItem => selectedItem.id === item.id);
+        return (
+            <TouchableOpacity
+                style={[styles.suggestionItem, isSelected && styles.selectedItem]}
+                onPress={() => handleSuggestionSelect(item)}
+            >
+                <Text style={[styles.suggestionText, isSelected && styles.selectedText]}>
+                    {item?.place_name}, {item?.state_name} ({item?.postcode})
+                </Text>
 
-    const handleSuggestionSelect = (item) => {
-        setPropSearch(`${item.place_name} [${item.postcode}]`);
-        setSuggestions([]);
+            </TouchableOpacity>
+        );
+    };
+
+    const handleSuggestionSelect = (selectedItem) => {
+        const isSelected = selectedProperties.some(item => item.id === selectedItem.id);
+        if (isSelected) {
+            // If the item is already selected, remove it
+            setSelectedProperties(prev => prev.filter(item => item.id !== selectedItem.id));
+        } else {
+            // If the item is not selected, add it
+            setSelectedProperties(prev => [...prev, selectedItem]);
+        }
+        setSuggestions([]); // Close the suggestions list after selection
     };
 
     return (
         <View style={styles.containerStyle}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: '10%', height: scale(50) }}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ width: "10%", height: scale(50) }}>
                     <BackIcon width={35} height={35} />
                 </TouchableOpacity>
-                <View style={{ width: '75%', }}>
+                <View style={{ width: "75%" }}>
                     <View style={styles.inputStyle}>
                         <TextInput
                             placeholder="Search suburb, postcode or state"
@@ -169,7 +186,10 @@ const HouseBooking = () => {
                             value={propSearch}
                             onChangeText={(val) => setPropSearch(val)}
                         />
-                        <TouchableOpacity style={{ height: '100%', width: '20%', alignItems: 'center', justifyContent: 'center', }} onPress={() => fetchData()}>
+                        <TouchableOpacity
+                            style={{ height: "100%", width: "20%", alignItems: "center", justifyContent: "center" }}
+                            onPress={() => fetchData()}
+                        >
                             <SearchBottomIcon stroke={appColors.black} width={20} height={20} />
                         </TouchableOpacity>
                     </View>
@@ -184,9 +204,19 @@ const HouseBooking = () => {
                         </View>
                     )}
                 </View>
-                <View style={{ width: '10%' }}>
-                    <TouchableOpacity style={{ width: scale(30), height: scale(30), justifyContent: 'center', alignItems: 'center', padding: 5, borderRadius: 34 / 2 }} onPress={() => navigation.navigate('Filters')}>
-                        <Image source={IMAGES.filter} style={styles.iconStyle} resizeMode='contain' />
+                <View style={{ width: "10%" }}>
+                    <TouchableOpacity
+                        style={{
+                            width: scale(30),
+                            height: scale(30),
+                            justifyContent: "center",
+                            alignItems: "center",
+                            padding: 5,
+                            borderRadius: 34 / 2,
+                        }}
+                        onPress={() => navigation.navigate("Filters")}
+                    >
+                        <Image source={IMAGES.filter} style={styles.iconStyle} resizeMode="contain" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -360,6 +390,31 @@ const styles = StyleSheet.create({
     },
     suggestionText: {
         color: appColors.black,
+    },
+    selectedContainer: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 5,
+    },
+    selectedItemContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 5,
+    },
+    selectedItemText: {
+        color: appColors.black,
+        fontSize: 14,
+    },
+    removeText: {
+        color: 'red',
+    },
+    selectedItem: {
+        backgroundColor: '#e0f7fa',
+    },
+    selectedText: {
+        color: appColors.primary,
     },
     tabStyle: {
         marginTop: 10,
