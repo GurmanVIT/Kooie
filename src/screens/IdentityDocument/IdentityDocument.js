@@ -22,10 +22,10 @@ const IdentityDocument = ({ navigation }) => {
                     <Text style={{ color: appColors.black, marginLeft: 10 }}>Add photo ID</Text>
                 </View>
 
-                <View style={styles.updateButtonStyle}>
+                {/* <View style={styles.updateButtonStyle}>
                     <AdPhoto />
                     <Text style={{ color: appColors.black, marginLeft: 10 }}>Add second ID</Text>
-                </View>
+                </View> */}
 
                 <TouchableOpacity
                     style={styles.buttonStyle}

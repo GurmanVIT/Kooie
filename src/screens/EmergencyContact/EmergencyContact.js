@@ -15,16 +15,21 @@ import dateFormat from 'dateformat'
 import CountryPicker from 'react-native-country-picker-modal';
 
 
-
 const EmergencyContact = ({ navigation }) => {
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [isDOB, setDOB] = useState(null);
-
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
     const [countryCode, setCountryCode] = useState('IN');
     const [callingCode, setCallingCode] = useState('91');
+
+
+    const handlePickDOB = (date) => {
+        setDOB(date)
+        setDatePickerVisibility(false)
+    };
 
     return (
         <SafeAreaView style={styles.root_}>
@@ -111,6 +116,14 @@ const EmergencyContact = ({ navigation }) => {
                 </View>
             </ScrollView>
             <ProfileFooter />
+
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handlePickDOB}
+                onCancel={() => setDatePickerVisibility(false)}
+
+            />
         </SafeAreaView>
     )
 }

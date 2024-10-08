@@ -22,12 +22,10 @@ import { scale } from 'react-native-size-matters';
 import { IMAGE_URL } from '../config/config';
 
 const SvgImage = (props) => {
-    console.log({ props });
-    // Text>{props.url}</Text>
     return (
         <SvgUri
-            width={scale(32)}
-            height={scale(32)}
+            width={scale(20)}
+            height={scale(20)}
             uri={`${IMAGE_URL + 'images/' + props?.url}`}
         />
     );

@@ -35,7 +35,7 @@ const Profile = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('MyFinance')}>
+                    {/* <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('MyFinance')}>
                         <View style={styles.profileIconStyle}>
                             <FinanceIcon />
                         </View>
@@ -46,7 +46,7 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Guides')}>
                         <View style={styles.profileIconStyle}>
@@ -61,7 +61,7 @@ const Profile = ({ navigation }) => {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('ExploreSuburb')}>
+                    {/* <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('ExploreSuburb')}>
                         <View style={styles.profileIconStyle}>
                             <ExploreSuburb />
                         </View>
@@ -72,9 +72,9 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('RentalApplications')}>
+                    {/* <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('RentalApplications')}>
                         <View style={styles.profileIconStyle}>
                             <RentalApplicationIcon />
                         </View>
@@ -85,9 +85,9 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
-                    <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Enquiry')}>
+                    {/* <TouchableOpacity style={styles.enquiredStyle} onPress={() => navigation.navigate('Enquiry')}>
                         <View style={styles.profileIconStyle}>
                             <ListingIcon />
                         </View>
@@ -98,7 +98,7 @@ const Profile = ({ navigation }) => {
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </ScrollView>
         </View>

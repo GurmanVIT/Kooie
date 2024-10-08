@@ -1,10 +1,14 @@
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import CheckBox from '@react-native-community/checkbox';
 import { BASE_URL } from '../../config/config';
 import Images from '../theme/Images';
 import { appColors } from '../../utils/appColors';
 import { useNavigation } from '@react-navigation/native';
+import { IMAGES } from '../../assets';
+import validator from 'validator';
+
+
 
 const SignupWithEmail = () => {
     const navigation = useNavigation();
@@ -16,23 +20,59 @@ const SignupWithEmail = () => {
     const inputAddressRef = useRef(null);
 
     const [loading, setLoading] = useState(false)
-    const [firstName, setFirstName] = useState('Garry');
-    const [LastName, setLastName] = useState('Sahota');
-    const [isEmail, setEmail] = useState("garry.jstech@gmail.com");
-    const [isPassword, setPassword] = useState("12345678");
-    const [isConfirmPassword, setConfirmPassword] = useState("12345678");
-    const [isAddress, setAddress] = useState('Mohali');
+    const [OTPloading, setOTPLoading] = useState(false)
+    const [firstName, setFirstName] = useState('');
+    const [LastName, setLastName] = useState('');
+    const [isEmail, setEmail] = useState("");
+    const [isPassword, setPassword] = useState("");
+    const [isPasswordShow, setPasswordShow] = useState(true);
+    const [isConfirmPassword, setConfirmPassword] = useState("");
+    const [isConfirmPasswordShow, setConfirmPasswordShow] = useState(true);
+    const [isAddress, setAddress] = useState('');
     const [isOTP, setOTP] = useState(null);
 
+    const [emailDisable, setEmailDisable] = useState(true)
+
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/;
+        return regex.test(password);
+    };
+
     const submitRegister = async () => {
+        const firstNameSanitized = validator.escape(firstName.trim());
+        const lastNameSanitized = validator.escape(LastName.trim());
+        const emailSanitized = validator.normalizeEmail(isEmail);
+        const addressSanitized = validator.escape(isAddress.trim());
+
+        // Frontend validations
+        if (!validator.isAlpha(firstNameSanitized) || !validator.isAlpha(lastNameSanitized)) {
+            Alert.alert('Error', 'First and last name must contain only alphabetic characters.');
+            return;
+        }
+        if (!validator.isEmail(emailSanitized)) {
+            Alert.alert('Error', 'Invalid email address.');
+            return;
+        }
+        if (!validatePassword(isPassword)) {
+            Alert.alert('Error', 'Password must be at least 8 characters, include a number, an uppercase, lowercase letter, and a special character.');
+            return;
+        }
+        if (isPassword !== isConfirmPassword) {
+            Alert.alert('Error', 'Passwords do not match.');
+            return;
+        }
+        if (!validator.isNumeric(isOTP)) {
+            Alert.alert('Error', 'OTP must be a numeric value.');
+            return;
+        }
 
         const formdata = new FormData();
-        formdata.append("first_name", firstName);
-        formdata.append("last_name", LastName);
-        formdata.append("email", isEmail);
-        formdata.append("password", isPassword);
+        formdata.append("first_name", firstNameSanitized);
+        formdata.append("last_name", lastNameSanitized);
+        formdata.append("email", emailSanitized);
+        formdata.append("password", isPassword);  // Hash if needed
         formdata.append("password_confirmation", isConfirmPassword);
-        formdata.append("address", isAddress);
+        formdata.append("address", addressSanitized);
         formdata.append("otp", isOTP);
 
         try {
@@ -46,23 +86,22 @@ const SignupWithEmail = () => {
             });
             const text = await response.text();
             if (!text) {
-                setLoading(false)
                 throw new Error('Empty response from server');
             }
+
             const result = JSON.parse(text);
             if (result?.status === '200') {
-                Alert.alert(result?.message);
-                setLoading(false)
+                Alert.alert('Success', result?.message);
+                setLoading(false);
                 navigation.navigate('SignInWithEmail');
             } else {
-                Alert.alert(result?.message);
-                setLoading(false)
+                throw new Error(result?.message || 'Registration failed');
             }
         } catch (error) {
             console.log('Error:', error.message);
             Alert.alert('Registration failed', error.message);
-            setLoading(false)
-
+        } finally {
+            setLoading(false);
         }
 
 
@@ -76,11 +115,13 @@ const SignupWithEmail = () => {
             method: "POST",
             body: formdata,
         };
-
+        setOTPLoading(true)
         fetch(`${BASE_URL}/verfy/email`, requestOptions).then((response) => response.json())
             .then((result) => {
                 console.log(result?.otp)
                 if (result?.status === "200") {
+                    setEmailDisable(false)
+                    setOTPLoading(false)
                     TimeCheck()
                     alert(result?.message)
                 } else {
@@ -104,6 +145,7 @@ const SignupWithEmail = () => {
                 setTimeLeft(formatTime(totalSeconds));
             } else {
                 clearInterval(intervalId);
+                setEmailDisable(true)
             }
         }, 1000);
 
@@ -139,7 +181,7 @@ const SignupWithEmail = () => {
                         value={LastName}
                         onChangeText={(val) => setLastName(val)}
                     />
-                    <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16 }}>
+                    <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }}>
                         <TextInput
                             ref={inputEmailRef}
                             style={[styles.inputStyle, { width: '70%', marginHorizontal: 0, borderTopRightRadius: 0, borderBottomRightRadius: 0 }]}
@@ -147,9 +189,14 @@ const SignupWithEmail = () => {
                             placeholderTextColor={appColors.placeholderColor}
                             value={isEmail}
                             onChangeText={(val) => setEmail(val)}
+                            editable={emailDisable}
                         />
                         <TouchableOpacity style={styles.verifyButton} onPress={sendOTP} disabled={!(timeLeft === "00:00")}>
-                            <Text style={{ color: appColors.white, fontSize: 14, fontWeight: 'bold' }}>{timeLeft === "00:00" ? "Send OTP" : timeLeft}</Text>
+                            {OTPloading ?
+                                <ActivityIndicator size={'small'} color={appColors.white} /> :
+                                <Text style={{ color: appColors.white, fontSize: 14, fontWeight: 'bold' }}>{timeLeft === "00:00" ? "Send OTP" : timeLeft}</Text>
+
+                            }
                         </TouchableOpacity>
                     </View>
                     <TextInput
@@ -158,26 +205,39 @@ const SignupWithEmail = () => {
                         placeholder="OTP"
                         placeholderTextColor={appColors.placeholderColor}
                         value={isOTP}
+                        maxLength={5}
                         onChangeText={(val) => setOTP(val)}
                     />
-                    <TextInput
-                        ref={inputPassRef}
-                        placeholder="Password"
-                        placeholderTextColor={appColors.placeholderColor}
-                        style={styles.inputStyle}
-                        value={isPassword}
-                        onChangeText={(val) => setPassword(val)}
-                        secureTextEntry
-                    />
-                    <TextInput
-                        ref={inputConfirmPassRef}
-                        placeholder="Confirm Password"
-                        placeholderTextColor={appColors.placeholderColor}
-                        style={styles.inputStyle}
-                        value={isConfirmPassword}
-                        onChangeText={(val) => setConfirmPassword(val)}
-                        secureTextEntry
-                    />
+                    <View style={styles.inputContainer}>
+
+                        <TextInput
+                            ref={inputPassRef}
+                            placeholder="Password"
+                            placeholderTextColor={appColors.placeholderColor}
+                            style={styles.input_}
+                            value={isPassword}
+                            onChangeText={(val) => setPassword(val)}
+                            secureTextEntry={isPasswordShow}
+                        />
+                        <TouchableOpacity style={styles.eyeBtn} onPress={() => setPasswordShow(!isPasswordShow)}>
+                            <Image source={isPasswordShow ? IMAGES.hideEye : IMAGES.showEye} style={{ width: 24, height: 24 }} resizeMode='contain' />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            ref={inputConfirmPassRef}
+                            placeholder="Confirm Password"
+                            placeholderTextColor={appColors.placeholderColor}
+                            style={styles.input_}
+                            value={isConfirmPassword}
+                            onChangeText={(val) => setConfirmPassword(val)}
+                            secureTextEntry={isConfirmPasswordShow}
+                        />
+                        <TouchableOpacity style={styles.eyeBtn} onPress={() => setConfirmPasswordShow(!isConfirmPasswordShow)}>
+                            <Image source={isConfirmPasswordShow ? IMAGES.hideEye : IMAGES.showEye} style={{ width: 24, height: 24 }} resizeMode='contain' />
+                        </TouchableOpacity>
+                    </View>
                     <TextInput
                         ref={inputAddressRef}
                         style={styles.inputStyle}
@@ -187,8 +247,9 @@ const SignupWithEmail = () => {
                         onChangeText={(val) => setAddress(val)}
                     />
 
-                    <TouchableOpacity style={styles.buttonStyle} onPress={submitRegister} >
-                        <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign up </Text>
+
+                    <TouchableOpacity style={[styles.buttonStyle, (!firstName || !LastName || !isAddress || !isEmail || !isPassword || !isConfirmPassword || !isOTP) && { opacity: 0.5 }]} onPress={submitRegister} disabled={!firstName || !LastName || !isAddress || !isEmail || !isPassword || !isConfirmPassword || !isOTP}>
+                        <Text style={{ color: appColors.white, fontWeight: '700' }}>Sign up</Text>
                     </TouchableOpacity>
 
 
@@ -225,20 +286,43 @@ const styles = StyleSheet.create({
     },
     viewStyle: {
         flex: 1,
+        paddingHorizontal: 16
     },
-    inputStyle: {
-        marginHorizontal: 16,
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
         borderRadius: 8,
         backgroundColor: appColors.lightGrey,
         marginTop: 16,
-        paddingHorizontal: 16,
-        color: appColors.black,
+        // marginHorizontal: 16,
         height: 45
+    },
+    input_: {
+        color: appColors.black,
+        width: '85%',
+        borderTopLeftRadius: 8,
+        borderBottomLeftRadius: 8,
+        paddingHorizontal: 10
+    },
+    eyeBtn: {
+        width: '15%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    inputStyle: {
+        borderRadius: 8,
+        backgroundColor: appColors.lightGrey,
+        marginTop: 16,
+        color: appColors.black,
+        height: 45,
+        paddingHorizontal: 10
     },
     buttonStyle: {
         color: appColors.white,
         backgroundColor: appColors.red,
-        marginHorizontal: 16,
         padding: 16,
         borderRadius: 24,
         marginTop: 20,

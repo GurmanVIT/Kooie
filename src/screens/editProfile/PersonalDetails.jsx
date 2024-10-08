@@ -1,18 +1,17 @@
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { memo, useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import BackIcon from '../../assets/svg/BackIcon'
 import { ProfileFooter, ProfileHeader } from '../../components'
 import { useNavigation } from '@react-navigation/native'
 import { appColors } from '../../utils/appColors'
-import { StretchOutY } from 'react-native-reanimated'
 import { BASE_URL } from '../../config/config'
 import { AuthContext } from '../../Contexts/authContext'
 import { IMAGES } from '../../assets'
 import { moderateScale, scale } from 'react-native-size-matters'
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import dateFormat from 'dateformat'
-import CountryPicker from 'react-native-country-picker-modal';
+import CountryPicker from 'react-native-country-picker-modal'
+
 
 
 
@@ -31,7 +30,7 @@ const PersonalDetails = () => {
 
     const [countryCode, setCountryCode] = useState('IN');
     const [callingCode, setCallingCode] = useState('91');
-    const [isNumber, setNumber] = useState('');
+    const [isNumber, setNumber] = useState();
     // console.log({ countryCode, callingCode, isNumber });
 
     const handleMobileNumberChange = (text) => {
@@ -59,7 +58,7 @@ const PersonalDetails = () => {
                     setUserInfo(result?.Userprofile)
                     setFirstName(result?.Userprofile?.first_name)
                     setLastName(result?.Userprofile?.last_name)
-                    setNumber(result?.Userprofile?.phone)
+                    setNumber(result?.Userprofile?.phone || '')
                     setDOB(result?.Userprofile?.dob)
                     setLoading(false)
                 } else {
@@ -78,12 +77,26 @@ const PersonalDetails = () => {
 
     const UpdateUserInfo = async () => {
         setLoading(true)
+
+        if (!firstName || !lastName || !isDOB) {
+            setLoading(false)
+            return Alert.alert('Please fill out all fields!')
+        }
+
         if (!isDOB) {
+            setLoading(false)
             return Alert.alert('Please add your Date of Birth!')
         }
+        const age = calculateAge(isDOB)
+        if (age < 18) {
+            setLoading(false)
+            return Alert.alert('You must be at least 18 years old!')
+        }
+
+
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
-        console.log({ userID, isDOB, firstName, lastName, isNumber });
+        // console.log({ userID, isDOB, firstName, lastName, isNumber });
 
         let formdata = new FormData();
         formdata.append("id", userID);
@@ -95,7 +108,6 @@ const PersonalDetails = () => {
         const requestOptions = { method: "POST", headers: myHeaders, body: formdata, };
         fetch(`${BASE_URL}/udpate/userprofile`, requestOptions).then((response) => response.json())
             .then(async (result) => {
-                console.log({ result });
 
                 if (result.status === '200') {
                     Alert.alert(result?.message)
@@ -104,23 +116,36 @@ const PersonalDetails = () => {
                 } else {
                     Alert.alert(result?.message)
                     setLoading(false)
-
                 }
             })
             .catch((error) => {
                 console.error(error);
                 setLoading(false)
-
             });
 
     }
-    //
+
 
     const handlePickDOB = (date) => {
+        const age = calculateAge(date)
+        if (age < 18) {
+            return Alert.alert('You must be at least 18 years old!')
+        }
         setDOB(date)
         setDatePickerVisibility(false)
-    };
+    }
 
+    const calculateAge = (dob) => {
+        const today = new Date()
+        const birthDate = new Date(dob)
+        let age = today.getFullYear() - birthDate.getFullYear()
+        const monthDiff = today.getMonth() - birthDate.getMonth()
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--
+        }
+        return age
+    }
 
 
 
@@ -210,7 +235,8 @@ const PersonalDetails = () => {
 
                     <View style={{ gap: 10, paddingRight: 50 }}>
                         <Text style={styles.text_16}>Want to change your email?</Text>
-                        <Text style={styles.text_light}>We will use the email you have defined as your Kooie.com.au username to inform about status updates. You can <Text style={{ fontWeight: 'bold', color: appColors.black }}>change it here</Text></Text>
+                        <Text style={styles.text_light}>We will use the email you have defined as your Kooie.com.au username to inform about status updates. You can
+                            <Text style={{ fontWeight: 'bold', color: appColors.black }} onPress={() => navigation.navigate('ChangeEmail')}> change it here</Text></Text>
                     </View>
 
                 </View>

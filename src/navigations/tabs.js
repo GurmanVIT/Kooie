@@ -39,13 +39,13 @@ const Tabs = () => {
         tabBarLabel: 'Collections',
       }}
       />
-      <Tab.Screen name="Property" component={Property} options={{
+      {/* <Tab.Screen name="Property" component={Property} options={{
         tabBarIcon: ({ focused }) => (
           <PropertyBottomIcon stroke={focused ? appColors.red : appColors.grey} />
         ),
         tabBarLabel: 'My Property',
       }}
-      />
+      /> */}
       <Tab.Screen name="Notification" component={Notification} options={{
         tabBarIcon: ({ focused }) => (
           <NotificationBottomIcon stroke={focused ? appColors.red : appColors.grey} />

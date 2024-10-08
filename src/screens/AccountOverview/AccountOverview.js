@@ -1,12 +1,53 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import BackIcon from '../../assets/svg/BackIcon';
 import SettingWhiteIcon from '../../assets/svg/SettingWhiteIcon';
 import LogoutIcon from '../../assets/svg/LogoutIcon';
 import MassageIcon from '../../assets/svg/MassageIcon';
+import { AuthContext } from '../../Contexts/authContext';
+import { BASE_URL } from '../../config/config';
 
 const AccountOverview = ({ navigation }) => {
+
+    const [loading, setLoading] = useState(false);
+    const { userID, authToken } = useContext(AuthContext);
+    const [userInfo, setUserInfo] = useState('')
+    // console.log({ userInfo });
+
+    useEffect(() => {
+        getUserInfo()
+    }, [])
+
+    const getUserInfo = async () => {
+        setLoading(true)
+        let myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+        const formdata = new FormData();
+        formdata.append("id", userID && userID || "");
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow"
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/get/userprofile`, requestOptions);
+            let result = await response.json();
+            if (result?.status === '200') {
+                setUserInfo(result?.Userprofile)
+            } else {
+                alert(result?.message);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
 
     return (
         <View style={styles.containerStyle}>
@@ -15,9 +56,9 @@ const AccountOverview = ({ navigation }) => {
                     <BackIcon />
                 </TouchableOpacity>
                 <Text style={styles.collectionStyle}>Account overview</Text>
-                <View style={styles.settingIconStyle}>
+                {/* <View style={styles.settingIconStyle}>
                     <SettingWhiteIcon />
-                </View>
+                </View> */}
             </View>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginTop: 20 }}>
@@ -35,16 +76,16 @@ const AccountOverview = ({ navigation }) => {
                             <MassageIcon />
                         </View>
                         <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-                            <Text style={{ color: appColors.black }}>email@address.com.au</Text>
-                            <Text style={{ color: 'green', fontSize: 12, marginTop: 4 }}>Verified</Text>
+                            <Text style={{ color: appColors.black }}>{(userInfo?.email) && (userInfo?.email)}</Text>
+                            {userInfo && <Text style={[{ fontSize: 12, marginTop: 4, color: 'green' }, (userInfo?.email_verification_status === 0) && { color: appColors.red }]}>{(userInfo?.email_verification_status) ? `Verified` : `unverified`}</Text>}
                         </View>
                     </View>
 
                     <Text style={{ marginTop: 20, color: appColors.black, fontSize: 16, fontWeight: '600' }}>Password</Text>
-                    <Text style={{ marginTop: 6 }}>Looking to update your password? We’ve gone password-less. Simply enter your email address when you log in to receive your unique verification code. </Text>
+                    <Text style={{ marginTop: 6, color: appColors.black, }}>Looking to update your password? We’ve gone password-less. Simply enter your email address when you log in to receive your unique verification code. </Text>
 
                     <Text style={{ marginTop: 20, color: appColors.black, fontSize: 16, fontWeight: '600' }}>Sign out everywhere</Text>
-                    <Text style={{ marginTop: 6 }}>Lost a device or signed in from a public computer? Sign out on all devices to protect your account from unauthorised access.</Text>
+                    <Text style={{ marginTop: 6, color: appColors.black, }}>Lost a device or signed in from a public computer? Sign out on all devices to protect your account from unauthorised access.</Text>
 
                     <View style={styles.signoutButtonStyle}>
                         <LogoutIcon />

@@ -13,7 +13,6 @@ import { AuthContext } from '../../Contexts/authContext';
 const Setting = ({ navigation }) => {
 
     const { isAuthenticated, isLoading, logout, } = useContext(AuthContext);
-    console.log({ isAuthenticated });
 
 
 
@@ -24,9 +23,9 @@ const Setting = ({ navigation }) => {
                     <BackIcon />
                 </TouchableOpacity>
                 <Text style={styles.collectionStyle}>Setings    </Text>
-                <TouchableOpacity style={styles.settingIconStyle}>
+                {/* <TouchableOpacity style={styles.settingIconStyle}>
                     <SettingWhiteIcon />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                 <View style={{ marginTop: 20 }}>
@@ -40,12 +39,12 @@ const Setting = ({ navigation }) => {
                             </View>
                         </TouchableOpacity>
 
-                        <View style={styles.enquiredStyle}>
+                        {/* <View style={styles.enquiredStyle}>
                             <Text style={{ fontSize: 16, color: appColors.black, flex: 1, fontWeight: '600' }}>Notification settings</Text>
                             <View style={{ width: 24, height: 24 }}>
                                 <ArrowRightIcon />
                             </View>
-                        </View>
+                        </View> */}
                     </View>
                 </View>
 
@@ -69,7 +68,7 @@ const Setting = ({ navigation }) => {
                     </View>
                 </View>
 
-                <Text style={{ fontWeight: '300', marginTop: 20 }}>We’d love to hear your feedback, wether you’ve
+                <Text style={{ fontWeight: '300', marginTop: 20, color: appColors.black }}>We’d love to hear your feedback, wether you’ve
                     got ideas on how we can improve - and would
                     really appreciate it if you rate us on the App Store.
                 </Text>
@@ -80,12 +79,12 @@ const Setting = ({ navigation }) => {
                 </View>
 
                 <View style={{ marginTop: 26 }}>
-                    <View style={styles.enquiredStyle}>
+                    {/* <View style={styles.enquiredStyle}>
                         <Text style={{ fontSize: 16, color: appColors.black, flex: 1, fontWeight: '600' }}>Commercial property</Text>
                         <View style={{ width: 24, height: 24 }}>
                             <ArrowRightIcon />
                         </View>
-                    </View>
+                    </View> */}
 
                     <View style={styles.enquiredStyle}>
                         <Text style={{ fontSize: 16, color: appColors.black, flex: 1, fontWeight: '600' }}>Privacy & terms</Text>

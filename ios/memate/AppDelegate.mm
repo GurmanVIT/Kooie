@@ -2,6 +2,15 @@
 
 #import <React/RCTBundleURLProvider.h>
 
+#import <Firebase.h>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
+  return YES;
+}
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions

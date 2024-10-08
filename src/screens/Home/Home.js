@@ -1,5 +1,5 @@
-import { FlatList, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View, } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import { FlatList, Image, ImageBackground, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View, } from 'react-native';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import Images from '../theme/Images';
 import SearchIcon from '../../assets/svg/SearchIcon';
@@ -9,8 +9,9 @@ import AgentImage from '../../assets/svg/AgentImage';
 import RedSearchIcon from '../../assets/svg/RedSearchIcon';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 import { AuthContext } from '../../Contexts/authContext';
-import { BASE_URL } from '../../config/config';
-
+import { BASE_URL, IMAGE_URL } from '../../config/config';
+import dateFormat from 'dateformat';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 
@@ -21,22 +22,21 @@ const Home = ({ navigation }) => {
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
     const [recentSearch, setRecentSearch] = useState([]);
-
-
-    // console.log('result', recentSearch);
-
-
-
+    const [news, setNews] = useState([]);
+    const [isPropInsight, setPropInsight] = useState([]);
+    const [isGuideInspireation, setGuideInspireation] = useState([]);
 
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
-    const DATA = [
-        { id: '1', title: 'Item 1' },
-        { id: '2', title: 'Item 2' },
-        { id: '3', title: 'Item 3' },
-    ];
-    useEffect(() => { fetchData && fetchData(); }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchData();
+            latestNews();
+            PropInsights();
+            GuideInspireation();
+        }, [])
+    );
 
     const fetchData = async () => {
         setLoading(true);
@@ -70,17 +70,114 @@ const Home = ({ navigation }) => {
                 setLoading(false);
             });
     };
+    const latestNews = async () => {
+        setLoading(true);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("category_id", "8");
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow"
+        };
+
+        fetch(`${BASE_URL}/get/latest/news`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result?.status === '200') {
+                    setNews(result?.data)
+                    setLoading(false);
+                } else {
+                    alert(result?.message);
+                    setLoading(false);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                setLoading(false);
+            });
+
+    };
+    const PropInsights = async () => {
+        setLoading(true);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("category_id", "9");
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow"
+        };
+
+        fetch(`${BASE_URL}/get/latest/news`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+
+                if (result?.status === '200') {
+                    setPropInsight(result?.data)
+                    setLoading(false);
+                } else {
+                    alert(result?.message);
+                    setLoading(false);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                setLoading(false);
+            });
+
+    };
+    const GuideInspireation = async () => {
+        setLoading(true);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        const formdata = new FormData();
+        formdata.append("category_id", "10");
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow"
+        };
+
+        fetch(`${BASE_URL}/get/latest/news`, requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                console.log({ result });
+
+                if (result?.status === '200') {
+                    setGuideInspireation(result?.data)
+                    setLoading(false);
+                } else {
+                    alert(result?.message);
+                    setLoading(false);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                setLoading(false);
+            });
+
+    };
 
     return (
         <View style={styles.containerStyle}>
 
             <ScrollView style={{ flex: 1, marginBottom: 10 }} showsVerticalScrollIndicator={false}>
-                <ImageBackground
-                    style={{ height: 200, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}
-                    source={Images.country_img}
-                >
+                <ImageBackground style={{ height: 200, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }} source={Images.country_img}>
                     <Pressable style={styles.searchContainer} onPress={() => navigation.navigate('HouseBooking', search)}>
-                        {/* <RedSearchIcon /> */}
+
                         <TextInput
                             style={styles.input}
                             placeholder="Start searching"
@@ -92,8 +189,6 @@ const Home = ({ navigation }) => {
                         <TouchableOpacity>
                             <RedSearchIcon />
                         </TouchableOpacity>
-                        {/* <Ionicons name="house" color="#ff0000" size={20} /> */}
-                        {/*  arrow-forward-circle-sharp  */}
                     </Pressable>
                 </ImageBackground>
 
@@ -113,14 +208,14 @@ const Home = ({ navigation }) => {
                     {isEnabled &&
                         <>
 
-                            {recentSearch && <TouchableOpacity style={styles.iconTextStyle} onPress={() => navigation.navigate('HouseBooking', recentSearch)}>
+                            {recentSearch?.location && <TouchableOpacity style={styles.iconTextStyle} onPress={() => navigation.navigate('HouseBooking', recentSearch)}>
                                 <View style={{ flexDirection: 'row', gap: scale(5), alignItems: 'center' }}>
                                     <View style={{ width: scale(40), height: scale(40) }}>
                                         <SearchIcon />
                                     </View>
                                     <View>
                                         <Text style={styles.text_12}>{recentSearch?.location}</Text>
-                                        <Text style={styles.para_}>{recentSearch?.Property_subtype} · {recentSearch?.price_range}</Text>
+                                        <Text style={styles.para_}>{recentSearch?.Property_subtype} - {recentSearch?.price_range}</Text>
                                     </View>
                                 </View>
                                 {/* <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -134,7 +229,7 @@ const Home = ({ navigation }) => {
                         </>
                     }
 
-                    <Text style={styles.text_14}>Suggestions for you</Text>
+                    {/* <Text style={styles.text_14}>Suggestions for you</Text>
 
                     <FlatList
                         data={DATA}
@@ -143,81 +238,98 @@ const Home = ({ navigation }) => {
                         keyExtractor={item => (item.id).toString()}
                         renderItem={() => (
                             <View style={styles.propertyIconText}>
-                                <View style={{ width: scale(100), height: scale(60) }}>
-                                    <PropertyIcon />
+                                <View style={{ width: '30%', }}>
+                                    <View style={{ width: '100%', height: scale(60) }}>
+                                        <PropertyIcon />
+                                    </View>
                                 </View>
-                                <View style={{ marginLeft: 16, flex: 1 }}>
+                                <View style={{ marginLeft: 16, flex: 1, width: '70%', }}>
                                     <Text style={{ fontSize: 16, fontWeight: '600', color: appColors.black }}>Get an estimate</Text>
                                     <Text style={styles.para_}>See how much a property is worth</Text>
                                 </View>
                             </View>
                         )}
-                    />
+                    /> */}
 
-                    <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Latest News</Text>
-                    <FlatList
-                        data={DATA}
-                        horizontal
-                        style={{ marginTop: 12 }}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={() => (
-                            <View style={{ width: 240, marginRight: 14 }}>
-                                <View style={{ width: 240, height: 160 }}>
-                                    <AgentImage />
-                                </View>
-                                <View>
-                                    <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>How to Find a Good Real Estate Agent</Text>
-                                    <Text style={{ marginTop: 4, fontSize: 12 }}>Oct  24, 2023</Text>
-                                </View>
-                            </View>
+                    {news && news?.length > 0 && <>
+                        <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Latest News</Text>
+                        <FlatList
+                            data={news}
+                            keyExtractor={item => item?.id}
+                            horizontal
+                            style={{ marginTop: 12 }}
+                            showsHorizontalScrollIndicator={false}
+                            renderItem={({ item, index }) => {
+                                return (
+                                    <View style={{ width: 240, marginRight: 14 }} key={index}>
+                                        <View style={{ width: 240, height: 160, }}>
+                                            <Image source={{ uri: IMAGE_URL + "images/" + item?.featured_img }} style={{ width: '100%', height: '100%', borderRadius: scale(10) }} />
+                                        </View>
+                                        <View>
+                                            <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>{(item?.image_title) && item?.image_title}</Text>
+                                            <Text style={{ marginTop: 4, fontSize: 12 }}>{dateFormat(item?.created_at, "mmm dd, yyyy")}</Text>
+                                        </View>
+                                    </View>
 
-                        )}
-                        keyExtractor={item => item.id}
-                    />
+                                )
+                            }}
 
-                    <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Property Insights</Text>
-                    <FlatList
-                        data={DATA}
-                        horizontal
-                        style={{ marginTop: 12 }}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={() => (
-                            <View style={{ width: 240, marginRight: 14 }}>
-                                <View style={{ width: 240, height: 160 }}>
-                                    <AgentImage />
-                                </View>
-                                <View>
-                                    <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>How to Find a Good Real Estate Agent</Text>
-                                    <Text style={styles.para_}>Oct  24, 2023</Text>
-                                </View>
-                            </View>
+                        />
+                    </>}
 
-                        )}
-                        keyExtractor={item => item.id}
-                    />
+                    {isPropInsight && isPropInsight.length > 0 &&
+                        <>
+                            <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Property Insights</Text>
+                            <FlatList
+                                data={isPropInsight}
+                                horizontal
+                                style={{ marginTop: 12 }}
+                                showsHorizontalScrollIndicator={false}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        <View style={{ width: 240, marginRight: 14 }} key={index}>
+                                            <View style={{ width: 240, height: 160, }}>
+                                                <Image source={{ uri: IMAGE_URL + "images/" + item?.featured_img }} style={{ width: '100%', height: '100%', borderRadius: scale(10) }} />
+                                            </View>
+                                            <View>
+                                                <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>{(item?.image_title) && item?.image_title}</Text>
+                                                <Text style={{ marginTop: 4, fontSize: 12 }}>{dateFormat(item?.created_at, "mmm dd, yyyy")}</Text>
+                                            </View>
+                                        </View>
 
-                    <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Guides & Inspiration</Text>
-                    <FlatList
-                        data={DATA}
-                        horizontal
-                        style={{ marginTop: 12 }}
-                        showsHorizontalScrollIndicator={false}
-                        renderItem={() => (
-                            <View style={{ width: 240, marginRight: 14 }}>
-                                <View style={{ width: 240, height: 160 }}>
-                                    <AgentImage />
-                                </View>
-                                <View>
-                                    <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>How to Find a Good Real Estate Agent</Text>
-                                    <Text style={styles.para_}>Oct  24, 2023</Text>
-                                </View>
-                            </View>
+                                    )
+                                }}
+                            />
+                        </>
+                    }
+                    {isGuideInspireation && isGuideInspireation.length > 0 && <>
+                        <Text style={{ marginTop: 16, fontSize: 18, fontWeight: '600', color: appColors.black }}>Guides & Inspiration</Text>
+                        <FlatList
+                            data={isGuideInspireation}
+                            horizontal
+                            style={{ marginTop: 12 }}
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={item => item.id}
+                            renderItem={({ item, index }) => {
+                                // console.log({ item });
 
-                        )}
-                        keyExtractor={item => item.id}
-                    />
+                                return (
+                                    <View style={{ width: 240, marginRight: 14 }} key={index}>
+                                        <View style={{ width: 240, height: 160, }}>
+                                            <Image source={{ uri: IMAGE_URL + "images/" + item?.featured_img }} style={{ width: '100%', height: '100%', borderRadius: scale(10) }} />
+                                        </View>
+                                        <View>
+                                            <Text style={{ fontWeight: '600', color: appColors.black, fontSize: 15, marginTop: 8 }}>{(item?.image_title) && item?.image_title}</Text>
+                                            <Text style={{ marginTop: 4, fontSize: 12 }}>{dateFormat(item?.created_at, "mmm dd, yyyy")}</Text>
+                                        </View>
+                                    </View>
+                                )
+                            }}
+                        />
+                    </>
+                    }
                 </View>
-            </ScrollView >
+            </ScrollView>
         </View >
     );
 };

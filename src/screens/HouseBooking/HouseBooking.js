@@ -1,5 +1,5 @@
 import { ActivityIndicator, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { appColors } from '../../utils/appColors';
 import BackIcon from '../../assets/svg/BackIcon';
 import SearchBottomIcon from '../../assets/svg/SearchBottomIcon';
@@ -14,8 +14,8 @@ import { BASE_URL, IMAGE_URL } from '../../config/config';
 import dateFormat from "dateformat";
 import { AuthContext } from '../../Contexts/authContext';
 import { IMAGES } from '../../assets';
-import { scale } from 'react-native-size-matters';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import Heart from '../../assets/svg/Heart';
 
 const HouseBooking = () => {
@@ -25,12 +25,14 @@ const HouseBooking = () => {
     const item = route?.params;
 
     const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(2);
     const [propData, setPropData] = useState([]);
     const [propCount, setPropCount] = useState(0);
     const [propSearch, setPropSearch] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [selectedProperties, setSelectedProperties] = useState([]);
-    // console.log('propData--------------------------------->', propData);
+    const [favProp, setFavProp] = useState([]);
+    // console.log({ selectedProperties });
 
     useEffect(() => {
         if (item) {
@@ -39,35 +41,44 @@ const HouseBooking = () => {
         } else {
             fetchData();
         }
+
     }, [item,]);
 
     useEffect(() => {
         getSuggestions();
-    }, [propSearch]);
+        // favData();
+    }, [propSearch])
+
+
 
     const fetchData = async (location) => {
         setLoading(true);
-        const myHeaders = new Headers();
+        let myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
 
-        const formdata = new FormData();
+        let formdata = new FormData();
         formdata.append("location", location || propSearch || '');
         formdata.append("bedroom", item?.BedroomsCount || '');
         formdata.append("bathroom", item?.BathroomsCount || '');
         formdata.append("carspaces", item?.CarSpaceCount || '');
         formdata.append("amount_range", item?.minSize || '');
         formdata.append("maximum_amount", item?.maxSize || '');
+        formdata.append("pageNo", page);
 
-        const requestOptions = {
+
+        let requestOptions = {
             method: "POST",
             headers: myHeaders,
             body: formdata,
             redirect: "follow",
         };
+        // console.log({ url: `${BASE_URL}/search/property?page=${page}` });
 
         try {
             const response = await fetch(`${BASE_URL}/search/property`, requestOptions);
-            const result = await response.json();
+            let result = await response.json();
+            // console.log({ result: response });
+
             if (result?.status === '200') {
                 setPropData(result?.datas);
                 setPropCount(result?.totalCount);
@@ -80,20 +91,54 @@ const HouseBooking = () => {
             setLoading(false);
         }
     };
+    const [propSubType, setPropSubType] = useState('townhouse');
+    const [priceRange, setPriceRange] = useState('200k-10m');
 
-    const addFavourate = async (propertyId) => {
-        console.log(propertyId, '<--propertyId');
-
-        if (!propertyId) {
-            return alert('Somthing is wrong!')
-        }
+    const recentSearch = async () => {
         setLoading(true);
+        let myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+        let formdata = new FormData();
+        formdata.append("location", (selectedProperties[0]?.place_name + ' ') + (selectedProperties[0]?.state_code + ' ') + '(' + (selectedProperties[0]?.postcode) + ')' || '');
+        formdata.append("user_id", userID);
+        formdata.append("Property_subtype", selectedProperties[0]?.state_code || '');
+        formdata.append("price_range", selectedProperties[0]?.postcode || '');
+
+        let requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow",
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/recent/search`, requestOptions);
+            let result = await response.json();
+            // console.log({ result: response });
+
+            if (result?.status === '200') {
+            } else {
+                alert(result?.message);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+
+    }
+    const addFavourate = async (propertyId) => {
+        if (!propertyId) return alert('Something is wrong!');
+
+        setLoading(true);
+
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
 
         const formdata = new FormData();
-        formdata.append("userid", userID || '');
-        formdata.append("propertyid", propertyId || '');
+        formdata.append("userid", userID);
+        formdata.append("propertyid", propertyId);
 
         const requestOptions = {
             method: "POST",
@@ -105,20 +150,55 @@ const HouseBooking = () => {
         try {
             const response = await fetch(`${BASE_URL}/save/property`, requestOptions);
             const result = await response.json();
-            // console.log('saveProperty,', result);
+            console.log({ result });
 
-            if (result?.status === '200') {
-                alert(result?.message);
-            } else {
-                alert(result?.message);
+            if (result?.status !== '200') {
+                alert(result?.message || 'Error adding to favorites');
             }
         } catch (error) {
-            console.error(error);
+            console.error('Add favorite error:', error);
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     };
+    // const favData = async () => {
+    //     setLoading(true);
 
+    //     const myHeaders = new Headers();
+    //     myHeaders.append("Authorization", `Bearer ${authToken}`);
+
+    //     const formdata = new FormData();
+    //     formdata.append("userid", userID);
+
+    //     const requestOptions = {
+    //         method: "POST",
+    //         headers: myHeaders,
+    //         body: formdata,
+    //         redirect: "follow",
+    //     };
+
+    //     try {
+    //         const response = await fetch(`${BASE_URL}/get/wishlist/property`, requestOptions);
+    //         const result = await response.json();
+
+    //         if (result?.status === '200') {
+    //             setFavProp(result?.data || []);
+    //         } else {
+    //             alert(result?.message || 'Error fetching favorites');
+    //         }
+    //     } catch (error) {
+    //         console.error('Fetch favorites error:', error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+    const toggleFavorite = (propertyId) => {
+        setFavProp((prevFavProps) =>
+            prevFavProps.map(fav =>
+                fav?.property_id === propertyId ? { ...fav, status: fav?.status === 1 ? 0 : 1 } : fav
+            )
+        );
+    };
     const getSuggestions = async () => {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
@@ -136,40 +216,47 @@ const HouseBooking = () => {
         try {
             const response = await fetch(`${BASE_URL}/suggested/search`, requestOptions);
             const result = await response.json();
+
             if (result?.Status === '200') {
                 setSuggestions(result?.data?.original?.cities || []);
             }
         } catch (error) {
-            console.error(error);
+            console.error('Get suggestions error:', error);
         }
+    };
+
+
+    const handleSuggestionSelect = (selectedItem) => {
+        const isAlreadySelected = selectedProperties.some(item => item.id === selectedItem.id);
+        if (isAlreadySelected) {
+            setSelectedProperties(prev => prev.filter(item => item.id !== selectedItem.id));
+        } else {
+            setSelectedProperties(prev => [...prev, selectedItem]);
+        }
+        setSuggestions([]);
     };
 
     const renderSuggestionItem = ({ item }) => {
         const isSelected = selectedProperties.some(selectedItem => selectedItem.id === item.id);
         return (
-            <TouchableOpacity
-                style={[styles.suggestionItem, isSelected && styles.selectedItem]}
-                onPress={() => handleSuggestionSelect(item)}
-            >
+            <TouchableOpacity style={[styles.suggestionItem, isSelected && styles.selectedItem]} onPress={() => handleSuggestionSelect(item)}>
                 <Text style={[styles.suggestionText, isSelected && styles.selectedText]}>
                     {item?.place_name}, {item?.state_name} ({item?.postcode})
                 </Text>
-
             </TouchableOpacity>
         );
     };
+    const renderSelectedSuggestions = () => {
+        return selectedProperties?.map((item, index) => (
+            <TouchableOpacity style={styles.sugTab} onPress={() => handleSuggestionSelect(item)} key={index}>
+                <Text style={{ color: appColors.black, fontSize: scale(12) }}>{item?.place_name}, {item?.state_name} ({item?.postcode}) </Text>
+                <Text style={{ color: appColors.red }}>X</Text>
+            </TouchableOpacity>
 
-    const handleSuggestionSelect = (selectedItem) => {
-        const isSelected = selectedProperties.some(item => item.id === selectedItem.id);
-        if (isSelected) {
-            // If the item is already selected, remove it
-            setSelectedProperties(prev => prev.filter(item => item.id !== selectedItem.id));
-        } else {
-            // If the item is not selected, add it
-            setSelectedProperties(prev => [...prev, selectedItem]);
-        }
-        setSuggestions([]); // Close the suggestions list after selection
+
+        ));
     };
+
 
     return (
         <View style={styles.containerStyle}>
@@ -188,7 +275,7 @@ const HouseBooking = () => {
                         />
                         <TouchableOpacity
                             style={{ height: "100%", width: "20%", alignItems: "center", justifyContent: "center" }}
-                            onPress={() => fetchData()}
+                            onPress={() => { fetchData(); recentSearch(); }}
                         >
                             <SearchBottomIcon stroke={appColors.black} width={20} height={20} />
                         </TouchableOpacity>
@@ -221,6 +308,25 @@ const HouseBooking = () => {
                 </View>
             </View>
 
+            {/* <View style={styles.selectedSuggSection}>
+                <View style={styles.sugTab}>
+                    <Text style={{ color: appColors.black }}>Daisy Hill, </Text>
+                </View>
+                <View style={styles.sugTab}>
+                    <Text style={{ color: appColors.black }}>Daisy Hill, Victoria (3264)</Text>
+                </View>
+                <View style={styles.sugTab}>
+                    <Text style={{ color: appColors.black }}>Daisy Hill,</Text>
+                </View>
+                <View style={styles.sugTab}>
+                    <Text style={{ color: appColors.black }}>Victoria (3264)</Text>
+                </View>
+            </View> */}
+
+            <View style={styles.selectedSuggSection}>
+                {renderSelectedSuggestions && renderSelectedSuggestions()}
+            </View>
+
             {/* Show loading indicator separately */}
             {loading ? (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -235,7 +341,7 @@ const HouseBooking = () => {
                             contentContainerStyle={styles.listContainer}
                             showsVerticalScrollIndicator={false}
                             renderItem={({ item, index }) => {
-                                console.log('itemitemitemitem', item?.property_id);
+                                // console.log({ item });
 
                                 return (
                                     <View style={{ borderWidth: 1, borderColor: appColors.offWhite, borderRadius: scale(10), marginBottom: scale(15), overflow: 'hidden' }} key={index}>
@@ -245,10 +351,10 @@ const HouseBooking = () => {
                                                 resizeMode={(item?.cover_img) ? 'cover' : 'contain'}
                                                 source={(item?.cover_img) ? { uri: IMAGE_URL + item?.cover_img } : IMAGES.kooieBlackLogo}
                                             >
-                                                <TouchableOpacity style={{ width: scale(34), height: scale(34), padding: scale(5), borderRadius: scale(34 / 2), position: 'absolute', right: scale(10), top: scale(10), backgroundColor: appColors.white, alignItems: 'center', justifyContent: 'center' }} onPress={() => addFavourate(item?.property_id)}>
+                                                <TouchableOpacity style={{ width: scale(30), height: scale(30), padding: scale(5), borderRadius: scale(34 / 2), position: 'absolute', right: scale(10), top: scale(10), backgroundColor: appColors.white, alignItems: 'center', justifyContent: 'center' }} onPress={() => addFavourate(item?.id)}>
                                                     {
-                                                        <Heart size={scale(24)} color={appColors.red} />
-                                                        // <HeartBottomIcon stroke={appColors.red} />
+                                                        // <Heart size={scale(20)} color={appColors.red} />
+                                                        <HeartBottomIcon stroke={appColors.red} />
                                                     }
                                                 </TouchableOpacity>
                                             </ImageBackground>
@@ -473,5 +579,22 @@ const styles = StyleSheet.create({
         fontSize: scale(11),
         color: appColors.black,
         opacity: 0.5
+    },
+    selectedSuggSection: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: scale(5),
+        paddingHorizontal: moderateScale(18),
+        marginBottom: scale(10)
+    },
+    sugTab: {
+        borderWidth: 1,
+        borderColor: appColors.borderColor,
+        paddingHorizontal: moderateScale(10),
+        paddingVertical: verticalScale(5),
+        borderRadius: scale(50),
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: scale(4)
     }
 });

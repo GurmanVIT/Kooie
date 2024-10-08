@@ -39,6 +39,8 @@ import { ForgotPassword } from '../screens/ForgotPassword';
 import { Filters } from '../screens/HouseBooking';
 import { appColors } from '../utils/appColors';
 import { scale } from 'react-native-size-matters';
+import TermAndCondition from '../screens/TermAndCondition/TermAndCondition';
+import ChangeEmail from '../screens/ChangeEmail/ChangeEmail';
 
 const Stack = createNativeStackNavigator();
 
@@ -108,6 +110,8 @@ const Roots = () => {
                     <Stack.Screen name="ExploreSuburb" component={ExploreSuburb} />
                     <Stack.Screen name="RentalApplications" component={RentalApplications} />
                     <Stack.Screen name="Enquiry" component={Enquiry} />
+                    <Stack.Screen name="TermAndCondition" component={TermAndCondition} />
+                    <Stack.Screen name="ChangeEmail" component={ChangeEmail} />
                     {/* <Stack.Screen name="Marketplaces" component={Marketplaces} /> */}
                 </Stack.Group>
             }

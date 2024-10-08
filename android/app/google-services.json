@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170086794252",
+    "project_id": "kooie-app",
+    "storage_bucket": "kooie-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170086794252:android:eb2dfa8ce01751cf971a29",
+        "android_client_info": {
+          "package_name": "com.kooie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeuIzum7SwJ7xKJUhoQyIBqBsFbTCn0zQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

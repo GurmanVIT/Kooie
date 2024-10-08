@@ -49,6 +49,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
     let route = useRoute();
     const propID = route?.params?.item?.id;
     const flatListRef = useRef(null);
+    console.log({ propID });
 
     // States
     const [loading, setLoading] = useState(false);
@@ -59,8 +60,8 @@ const HouseBookingInnerPage = ({ navigation }) => {
     const [simillerProp, setSimillerProp] = useState([]);
     const [isAmenties, setAmenties] = useState([]);
     const [region, setRegion] = useState({
-        latitude: 37.78825,
-        longitude: -122.4324,
+        latitude: 25.2744,
+        longitude: 133.7751,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421
     });
@@ -94,7 +95,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
         setLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
-        console.log({ propID });
+        // console.log({ propID });
 
         const formdata = new FormData();
         formdata.append("id", propID);
@@ -205,9 +206,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
 
         return `${hoursDifference} hrs`;
     };
-    // console.log('propData && (propData[0]?.floorplane_link)', propData && (propData[0]?.floorplane_link).length > 0);
 
-    // console.log('propData------------------------------------------>', propData);
 
     return (
         <View style={styles.containerStyle}>
@@ -234,38 +233,40 @@ const HouseBookingInnerPage = ({ navigation }) => {
                         <View style={{ marginTop: 30, gap: scale(10) }}>
                             {/* companyLogo */}
 
-                            {(propData && propData[0]?.agent_agency?.agency_banar_img) &&
+                            {(propData[0]?.agent_agency?.profile_img) &&
                                 <Image
-                                    source={(propData && propData[0]?.agent_agency?.agency_banar_img) && { uri: (IMAGE_URL + propData[0]?.agent_agency?.agency_banar_img) }}
+                                    source={(propData && propData[0]?.agent_agency?.profile_img) && { uri: (IMAGE_URL + 'images/' + propData[0]?.agent_agency?.profile_img) }}
                                     style={styles.companyLogo}
                                     resizeMode='contain'
-                                    alt='Agency Logo' />}
+                                    alt='Agency Logo' />
+                            }
 
                             {/* property images */}
-                            <View style={styles.container}>
-                                <FlatList
-                                    ref={flatListRef}
-                                    data={propData && propData[0]?.image_vedio_link}
-                                    horizontal
-                                    pagingEnabled
-                                    showsHorizontalScrollIndicator={false}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item }) => (
-                                        <View style={styles.imageContainer}>
-                                            <Image source={{ uri: IMAGE_URL + item?.image_vedio_file }} style={styles.image} resizeMode='cover' />
-                                        </View>
-                                    )}
-                                    onViewableItemsChanged={onViewableItemsChanged}
-                                    viewabilityConfig={{ itemVisiblePercentThreshold: 50, }}
-                                />
-                                <View style={styles.indexContainer}>
-                                    <Text style={styles.indexText}>{`${currentIndex + 1} of ${propData && propData[0]?.image_vedio_link.length}`}</Text>
-                                </View>
-                            </View>
+                            {propData && (propData[0]?.image_vedio_link) &&
+                                <View style={styles.container}>
+                                    <FlatList
+                                        ref={flatListRef}
+                                        data={propData && propData[0]?.image_vedio_link}
+                                        horizontal
+                                        pagingEnabled
+                                        showsHorizontalScrollIndicator={false}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={({ item }) => (
+                                            <View style={styles.imageContainer}>
+                                                <Image source={{ uri: IMAGE_URL + item?.image_vedio_file }} style={styles.image} resizeMode='cover' />
+                                            </View>
+                                        )}
+                                        onViewableItemsChanged={onViewableItemsChanged}
+                                        viewabilityConfig={{ itemVisiblePercentThreshold: 50, }}
+                                    />
+                                    <View style={styles.indexContainer}>
+                                        <Text style={styles.indexText}>{`${currentIndex + 1} of ${propData && propData[0]?.image_vedio_link.length}`}</Text>
+                                    </View>
+                                </View>}
 
                             <View style={{ paddingHorizontal: 16, marginBottom: scale(20) }}>
                                 <View style={styles.sections}>
-                                    <Text style={styles.text_14}>For Sale {(propData && propData[0]?.from_price) ? (propData && '$' + propData[0]?.from_price + ' -') : null}  {(propData && propData[0]?.to_price) ? (propData && '$' + propData[0]?.to_price) : null}</Text>
+                                    <Text style={styles.text_14}>For Sale {(propData[0]?.po_price) ? '$' + (propData[0]?.po_price) : (propData[0]?.from_price) && '$' + (propData[0]?.from_price)} {((propData[0]?.from_price) || (propData[0]?.to_price)) && ' - '} {(propData[0]?.to_price) && '$' + (propData[0]?.to_price)}</Text>
                                     <Text style={styles.para_}>{propData && propData[0]?.street_address}</Text>
                                 </View>
 
@@ -317,7 +318,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                 }
                                 <View style={styles.line__} />
 
-                                <View style={styles.sections}>
+                                {/* <View style={styles.sections}>
                                     <Text style={styles.text_14}>Home Loan Calculator</Text>
                                     <View style={styles.row_between}>
                                         <View style={styles.row_}>
@@ -334,9 +335,9 @@ const HouseBookingInnerPage = ({ navigation }) => {
 
                                 </View>
 
-                                <View style={styles.line__} />
+                                <View style={styles.line__} /> */}
 
-                                <View style={styles.sections}>
+                                {/* <View style={styles.sections}>
                                     <Text style={styles.text_14}>Your Home Loan</Text>
 
                                     <TouchableOpacity style={styles.row_between}>
@@ -347,7 +348,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                     </TouchableOpacity>
                                 </View>
 
-                                <View style={styles.line__} />
+                                <View style={styles.line__} /> */}
 
                                 {propData && (propData[0]?.propbasic_details[0]?.description) &&
                                     <View style={styles.sections}>
@@ -378,16 +379,20 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                         renderItem={({ item, index }) => {
                                             return (
                                                 <>
-                                                    {item?.icon_images != null && (
-                                                        <View style={styles.itemContainer} key={index}>
-                                                            <View style={styles.iconContainer}>
-                                                                {/* <SvgImage url={item?.icon_images} />  Use SvgImage */}
+                                                    {/* {(item?.key_id) && */}
+                                                    <>
+                                                        {item?.key_id != null && (
+                                                            <View style={styles.itemContainer} key={index}>
+                                                                <View style={styles.iconContainer}>
+                                                                    <SvgImage url={item?.icon_images} />
+                                                                </View>
+                                                                <View style={styles.textContainer}>
+                                                                    <Text style={styles.label} numberOfLines={2}>{item?.amenti_name}</Text>
+                                                                </View>
                                                             </View>
-                                                            <View style={styles.textContainer}>
-                                                                <Text style={styles.label} numberOfLines={2}>{item?.amenti_name}</Text>
-                                                            </View>
-                                                        </View>
-                                                    )}
+                                                        )}
+                                                    </>
+                                                    {/* } */}
                                                 </>
                                             );
                                         }}
@@ -426,9 +431,11 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                                     data={propData && propData[0]?.floorplane_link}
                                                     scrollEnabled={false}
                                                     renderItem={({ item, index }) => {
+                                                        console.log('item?.image_vedio_file', item?.image_vedio_file);
+
                                                         return (
                                                             <>
-                                                                <Image source={{ uri: IMAGE_URL + item?.image_vedio_file }} style={styles.bluemapImage} resizeMode='contain' />
+                                                                <Image source={{ uri: IMAGE_URL + 'images/' + item?.image_vedio_file }} style={styles.bluemapImage} resizeMode='contain' />
                                                                 <View style={styles.indexContainer}>
                                                                     <Text style={styles.indexText}>{`${index + 1}`}</Text>
                                                                 </View>
@@ -460,7 +467,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                     </View>
                                 }
 
-                                <View style={styles.sections}>
+                                {/* <View style={styles.sections}>
                                     <Text style={styles.text_14}>Inspections</Text>
                                     <Text style={styles.para_}>Get notified of any changes or cancellations by adding an inspection to your plan.</Text>
 
@@ -547,7 +554,7 @@ const HouseBookingInnerPage = ({ navigation }) => {
                                         </View>
                                     </View>
                                 </View>
-                                <View style={styles.line__} />
+                                <View style={styles.line__} /> */}
 
                                 <View style={styles.sections}>
                                     <View style={[styles.row_between, { marginVertical: verticalScale(5) }]}>
@@ -627,11 +634,11 @@ const HouseBookingInnerPage = ({ navigation }) => {
                         </View>
                     </ScrollView >
                     <View style={styles.footer}>
-                        <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.black }]} onPress={() => navigation.navigate('Enquiry')}>
+                        <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.black }]} onPress={() => navigation.navigate('Enquiry', { propID })}>
                             <Text style={styles.ftrBtnTxt}>Enquire</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.red }]}>
+                        <TouchableOpacity style={[styles.ftrBtn, { backgroundColor: appColors.red }]} onPress={() => callAgent(propData && propData[0]?.agent_agency?.phone)}>
                             <Text style={styles.ftrBtnTxt}>Call</Text>
                         </TouchableOpacity>
                     </View>
@@ -701,6 +708,8 @@ const styles = StyleSheet.create({
         width: scale(120),
         height: scale(60),
         alignSelf: 'center',
+        borderBottomRightRadius: scale(20),
+        borderTopLeftRadius: scale(20)
     },
     image: {
         width: '100%',
@@ -758,7 +767,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         borderColor: appColors.borderColor,
-        paddingVertical: scale(5),
+        padding: scale(10),
     },
     textContainer: {
         width: '65%',

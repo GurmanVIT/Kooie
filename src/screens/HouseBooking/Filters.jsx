@@ -33,10 +33,45 @@ const Filters = ({ navigation }) => {
     const [maxSize, setMaxSize] = useState(null);
 
     const landSizeOptions = [
-        { label: '100 sq ft', value: '100' },
-        { label: '200 sq ft', value: '200' },
-        { label: '500 sq ft', value: '500' },
-        { label: '1000 sq ft', value: '1000' },
+        { label: 'Any', value: 'any' },
+        { label: '200 sq ft', value: '200sq' },
+        { label: '300 sq ft', value: '300sq' },
+        { label: '400 sq ft', value: '400sq' },
+        { label: '500 sq ft', value: '500sq' },
+        { label: '600 sq ft', value: '600sq' },
+        { label: '700 sq ft', value: '700sq' },
+        { label: '800 sq ft', value: '800sq' },
+        { label: '900 sq ft', value: '900sq' },
+        { label: '1000 sq ft', value: '1000sq' },
+        { label: '1200 sq ft', value: '1200sq' },
+        { label: '1500 sq ft', value: '1500sq' },
+        { label: '1750 sq ft', value: '1750sq' },
+        { label: '2000 sq ft', value: '2000sq' },
+        { label: '3000 sq ft', value: '3000sq' },
+        { label: '4000 sq ft', value: '4000sq' },
+        { label: '5000 sq ft', value: '5000sq' },
+        { label: '1 ha', value: '1ha' },
+        { label: '2 ha', value: '2ha' },
+        { label: '3 ha', value: '3ha' },
+        { label: '4 ha', value: '4ha' },
+        { label: '5 ha', value: '5ha' },
+        { label: '10 ha', value: '10ha' },
+        { label: '20 ha', value: '20ha' },
+        { label: '30 ha', value: '30ha' },
+        { label: '40 ha', value: '40ha' },
+        { label: '50 ha', value: '50ha' },
+        { label: '60 ha', value: '60ha' },
+        { label: '70 ha', value: '70ha' },
+        { label: '80 ha', value: '80ha' },
+        { label: '90 ha', value: '90ha' },
+        { label: '100 ha', value: '100ha' },
+        { label: '200 ha', value: '200ha' },
+        { label: '300 ha', value: '300ha' },
+        { label: '400 ha', value: '400ha' },
+        { label: '500 ha', value: '500ha' },
+        { label: '1000 ha', value: '1000ha' },
+        { label: '5000 ha', value: '5000ha' },
+        { label: '10000 ha', value: '1000ha' },
     ];
 
     const resetFilter = async () => {
@@ -71,7 +106,7 @@ const Filters = ({ navigation }) => {
 
     return (
         <View style={styles.containerStyle}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16, paddingHorizontal: 16, paddingBottom: scale(10) }}>
+            {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16, paddingHorizontal: 16, paddingBottom: scale(10) }}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <BackIcon width={35} height={35} />
                 </TouchableOpacity>
@@ -83,7 +118,7 @@ const Filters = ({ navigation }) => {
                         style={[styles.inputStyle, { paddingLeft: 4, width: "85%", }]}
                     />
                 </View>
-            </View>
+            </View> */}
             <ScrollView style={{ flex: 1, paddingHorizontal: 16, }} showsVerticalScrollIndicator={false}>
 
                 {/* property type */}

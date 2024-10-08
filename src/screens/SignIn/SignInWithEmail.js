@@ -1,31 +1,57 @@
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
-import React, { useContext, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Image, TouchableOpacity, StyleSheet, Text, TextInput, View, Pressable } from 'react-native';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { appColors } from '../../utils/appColors';
 import CheckBox from '@react-native-community/checkbox';
 import Images from '../theme/Images';
 import { BASE_URL } from '../../config/config';
 import * as Keychain from 'react-native-keychain';
 import { AuthContext } from '../../Contexts/authContext';
-
-
-
+import validator from 'validator';
 
 const SignInWithEmail = ({ navigation }) => {
-  const { isAuthenticated, isLoading, checkToken } = useContext(AuthContext);
-
-
+  const { checkToken } = useContext(AuthContext);
   const inputEmailRef = useRef(null);
   const inputPassRef = useRef(null);
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
-  const [isEmail, setEmail] = useState("garry.jstech@gmail.com");
-  const [isPassword, setPassword] = useState("12345678");
-  const [loading, setLoading] = useState(false)
+  const [isEmail, setEmail] = useState("");
+  const [isPassword, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    loadRememberedData();
+  }, []);
 
+  const loadRememberedData = async () => {
+    try {
+      const emailData = await Keychain.getGenericPassword({ service: 'email' });
+      const passwordData = await Keychain.getGenericPassword({ service: 'password' });
+
+      if (emailData && passwordData) {
+        setEmail(emailData.username);
+        setPassword(passwordData.password);
+        setToggleCheckBox(true);
+      }
+    } catch (error) {
+      console.log('Error loading remembered data:', error);
+    }
+  };
+
+  const validateInputs = () => {
+    if (!validator.isEmail(isEmail)) {
+      Alert.alert("Invalid email", "Please enter a valid email address.");
+      return false;
+    }
+    if (isPassword.length < 8) {
+      Alert.alert("Weak password", "Password must be at least 8 characters long.");
+      return false;
+    }
+    return true;
+  };
 
   const submitLogin = async () => {
+    if (!validateInputs()) return;
 
-    setLoading(true)
+    setLoading(true);
     const formdata = new FormData();
     formdata.append("email", isEmail);
     formdata.append("password", isPassword);
@@ -36,31 +62,38 @@ const SignInWithEmail = ({ navigation }) => {
       redirect: "follow"
     };
 
-    fetch(`${BASE_URL}/login`, requestOptions).then((response) => response.json())
-      .then(async (result) => {
-        console.log(result);
+    try {
+      const response = await fetch(`${BASE_URL}/login`, requestOptions);
+      const result = await response.json();
 
-        if (result.status === '200') {
-          await Keychain.setGenericPassword('accessToken', result?.access_token, { service: 'accessToken' });
-          await Keychain.setGenericPassword('userID', JSON.stringify(result?.user_id), { service: 'userID' });
+      if (result.status === '200') {
+        // Save tokens using Keychain
+        await Keychain.setGenericPassword('accessToken', result?.access_token, { service: 'accessToken' });
+        await Keychain.setGenericPassword('userID', JSON.stringify(result?.user_id), { service: 'userID' });
 
-          Alert.alert(result?.message)
-          checkToken()
-          setLoading(false)
+        // Remember credentials if the checkbox is checked
+        if (toggleCheckBox) {
+          await Keychain.setGenericPassword(isEmail, isPassword, { service: 'email' });
+          await Keychain.setGenericPassword('password', isPassword, { service: 'password' });
         } else {
-          Alert.alert(result?.message)
-          setLoading(false)
-
+          // Clear remembered credentials if the checkbox is unchecked
+          await Keychain.resetGenericPassword({ service: 'email' });
+          await Keychain.resetGenericPassword({ service: 'password' });
         }
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false)
 
-      });
-
-  }
-
+        checkToken();
+        setLoading(false);
+        Alert.alert(result?.message);
+      } else {
+        throw new Error(result?.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login Error:', error.message);
+      Alert.alert("Login failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.containerStyle}>
@@ -69,7 +102,7 @@ const SignInWithEmail = ({ navigation }) => {
         <Image resizeMode="cover" source={Images.kooieBlackLogo} />
       </View>
       <View style={styles.viewStyle}>
-        <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: '600', color: appColors.black, marginTop: 50 }}>Sign in</Text>
+        <Text style={styles.signInText}>Sign in</Text>
         <TextInput
           ref={inputEmailRef}
           style={styles.inputStyle}
@@ -89,14 +122,12 @@ const SignInWithEmail = ({ navigation }) => {
         />
 
         <TouchableOpacity style={styles.buttonStyle} onPress={submitLogin} disabled={loading}>
-          {loading ? <>
-            <ActivityIndicator size={'small'} color={appColors.white} />
-          </> :
+          {loading ? <ActivityIndicator size={'small'} color={appColors.white} /> :
             <Text style={{ color: appColors.white, fontWeight: '700' }}> Sign In </Text>}
         </TouchableOpacity>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20, marginHorizontal: 16, }}>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', }}>
+        <View style={styles.rememberContainer}>
+          <View style={styles.checkBoxContainer}>
             <CheckBox
               disabled={false}
               value={toggleCheckBox}
@@ -105,20 +136,17 @@ const SignInWithEmail = ({ navigation }) => {
               tintColors={{ true: 'red', false: 'red' }}
               onValueChange={newValue => setToggleCheckBox(newValue)}
             />
-            <Text style={{ color: appColors.black }}>Remember Me</Text>
+            <Text style={styles.rememberText}>Remember Me</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
             <Text style={styles.textForgotStyle}>Forgot Password?</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <Pressable style={{ backgroundColor: appColors.offWhite, height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 }} onPress={() => navigation.navigate('SignupWithEmail')}>
+      <Pressable style={styles.footer} onPress={() => navigation.navigate('SignupWithEmail')}>
         <Text style={{ fontSize: 13, color: appColors.grey }}>Don't have an account? </Text>
         <Text style={{ fontSize: 14, color: appColors.lightRed, fontWeight: '700' }}>Signup</Text>
       </Pressable>
-      {/* <TouchableOpacity style={styles.signInStyle} onPress={() => navigation.navigate('SignIn')}>
-        <Text style={{ color: appColors.white, fontWeight: '700' }}> Signup </Text>
-      </TouchableOpacity> */}
     </View>
   );
 };
@@ -161,14 +189,34 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
   },
-  signInStyle: {
-    marginHorizontal: 16,
-    borderRadius: 24,
-    borderColor: appColors.black,
-    backgroundColor: appColors.black,
-    borderWidth: 1,
-    alignItems: 'center',
-    padding: 16,
-    bottom: 36,
+  signInText: {
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: appColors.black,
+    marginTop: 50,
   },
+  rememberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    marginHorizontal: 16,
+  },
+  checkBoxContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rememberText: {
+    color: appColors.black,
+  },
+  footer: {
+    backgroundColor: appColors.offWhite,
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2
+  }
 });

@@ -63,7 +63,7 @@ const ExploreSuburb = ({ navigation }) => {
                                 </View>
                                 <View style={{ paddingHorizontal: 10, paddingVertical: 10 }}>
                                     <Text style={{ fontWeight: '600', color: appColors.black }}>How to Find a Good Real Estate Agent</Text>
-                                    <Text style={{ marginTop: 4, }}>Oct  24, 2023</Text>
+                                    <Text style={{ marginTop: 4, color: appColors.black }}>Oct  24, 2023</Text>
                                 </View>
                             </View>
 
@@ -82,7 +82,7 @@ const ExploreSuburb = ({ navigation }) => {
                                     <Image source={Images.Boats} resizeMode='cover' style={{ width: '100%', height: '100%', borderTopRightRadius: 8, borderTopLeftRadius: 8, }} />
                                 </View>
                                 <View style={{ paddingHorizontal: 10, paddingVertical: 6 }}>
-                                    <Text style={{ marginTop: 8, }}>Part one</Text>
+                                    <Text style={{ marginTop: 8, color: appColors.black }}>Part one</Text>
                                     <Text style={{ fontWeight: '600', color: appColors.black, marginTop: 4 }}>Everyting you need to know about buying an apartment</Text>
                                 </View>
                             </View>
@@ -138,8 +138,8 @@ const ExploreSuburb = ({ navigation }) => {
                                     borderColor: active === 1 ? appColors.red : appColors.lightGrey,
                                 }}
                             >
-                                Explore Australia 
-                           </Text>
+                                Explore Australia
+                            </Text>
                         </View>
                     </View>
 
@@ -289,5 +289,7 @@ const styles = StyleSheet.create({
     textBorder: {
         borderColor: appColors.placeholderColor,
         borderBottomWidth: 1,
+        color: appColors.black,
+        opacity: 0.7
     },
 })

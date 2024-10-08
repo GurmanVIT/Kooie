@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { appColors } from '../../../utils/appColors';
 import HeartCollectionIcon from '../../../assets/svg/HeartCollectionIcon';
 import SearchBottomIcon from '../../../assets/svg/SearchBottomIcon';
@@ -16,7 +16,7 @@ import ArrowRightIcon from '../../../assets/svg/ArrowRightIcon';
 import MassageIcon from '../../../assets/svg/MassageIcon';
 import HiddenIcon from '../../../assets/svg/HiddenIcon';
 import TabCalendarIcon from '../../../assets/svg/TabCalendarIcon';
-import { scale } from 'react-native-size-matters';
+import { scale, verticalScale } from 'react-native-size-matters';
 import { BASE_URL, IMAGE_URL } from '../../../config/config';
 import Heart from '../../../assets/svg/Heart';
 import BedIcon from '../../../assets/svg/BedIcon';
@@ -26,6 +26,8 @@ import MeterIcon from '../../../assets/svg/MeterIcon';
 import HeartBottomIcon from '../../../assets/svg/HeartBottomIcon';
 import { AuthContext } from '../../../Contexts/authContext';
 import dateFormat from "dateformat";
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { IMAGES } from '../../../assets';
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -51,24 +53,31 @@ const dates = getNextDays(30);
 
 const Collection = ({ navigation }) => {
     const { userID, authToken } = useContext(AuthContext);
+    const route = useRoute()
+
     const [active, setActive] = useState(0);
     const [loading, setLoading] = useState(false);
     const [propData, setPropData] = useState([]);
     const [favProp, setFavProp] = useState([]);
 
-    // Fetch favorite properties (wishlist)
-    useEffect(() => {
-        favData(); // Fetch favorite property IDs first
-    }, []);
 
-    // Function to fetch favorite properties (wishlist)
+    useFocusEffect(
+        useCallback(() => {
+            favData();
+        }, [route])
+    );
+
+    console.log({ userID });
+
+
+
     const favData = async () => {
         setLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
 
         const formdata = new FormData();
-        formdata.append("userid", '940');
+        formdata.append("userid", userID);
 
         const requestOptions = {
             method: "POST",
@@ -80,28 +89,26 @@ const Collection = ({ navigation }) => {
         try {
             const response = await fetch(`${BASE_URL}/get/wishlist/property`, requestOptions);
             const result = await response.json();
+
             if (result?.status === '200') {
-                const favProperties = result?.data; // Save favorite property data
-                setFavProp(favProperties); // Store favorites
-                fetchData(favProperties); // Fetch all properties and filter them
+                setFavProp(result?.data);
             } else {
                 alert(result?.message);
             }
         } catch (error) {
             console.error(error);
         } finally {
-            // setLoading(false);
+            setLoading(false);
         }
     };
 
-    // Function to fetch all properties and filter by wishlist (favProp)
     const fetchData = async (favProperties) => {
         setLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${authToken}`);
 
         const formdata = new FormData();
-        formdata.append("location", ''); // Include additional filters if needed
+        formdata.append("location", '');
 
         const requestOptions = {
             method: "POST",
@@ -116,15 +123,13 @@ const Collection = ({ navigation }) => {
             if (result?.status === '200') {
                 const allProperties = result?.datas;
 
-                // Extract property_id from favorite properties (wishlist)
-                const favPropertyIds = favProperties.map(fav => fav.property_id);
+                // Filter favProperties based on id and status (0 or 1)
+                const filteredProperties = allProperties.filter(prop => {
+                    const favProperty = favProperties.find(fav => fav.id === prop.id);
+                    return favProperty && (favProperty.status === 0 || favProperty.status === 1);
+                });
 
-                console.log({ favPropertyIds });
-
-                // Filter the allProperties based on the wishlist's property_id
-                const filteredProperties = allProperties.filter(prop => favPropertyIds.includes(prop.property_id));
-
-                // Update the state with filtered properties
+                // Set the filtered properties to state
                 setPropData(filteredProperties);
             } else {
                 alert(result?.message);
@@ -136,9 +141,57 @@ const Collection = ({ navigation }) => {
         }
     };
 
-    // console.log({ propData });
+    const removeFavourate = async (propertyId) => {
+        console.log(propertyId, '<-----');
 
+        if (!propertyId) {
+            return alert('Somthing is wrong!')
+        }
+        setLoading(true);
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${authToken}`);
 
+        const formdata = new FormData();
+        formdata.append("userid", userID || '');
+        formdata.append("propertyid", propertyId || '');
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formdata,
+            redirect: "follow",
+        };
+
+        try {
+            const response = await fetch(`${BASE_URL}/save/property`, requestOptions);
+            const result = await response.json();
+            console.log({ result });
+
+            if (result?.status === '200') {
+                favData()
+            } else {
+                alert(result?.message);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleFavorite = async (propertyId) => {
+        try {
+            const updatedFavProp = favProp.map(fav =>
+                fav.property_id === propertyId
+                    ? { ...fav, status: fav.status === 1 ? 0 : 1 } // Toggle status
+                    : fav
+            );
+            setFavProp(updatedFavProp);  // Update state
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
 
 
 
@@ -155,10 +208,10 @@ const Collection = ({ navigation }) => {
                     <Text onPress={() => setActive(0)}
                         style={[styles.tab_text, active === 0 && { color: appColors.red, borderColor: appColors.red }]} >Properties </Text>
                 </View>
-                <View style={{ width: '50%' }}>
+                {/* <View style={{ width: '50%' }}>
                     <Text onPress={() => setActive(1)}
                         style={[styles.tab_text, active === 1 && { color: appColors.red, borderColor: appColors.red }]}>Inspections</Text>
-                </View>
+                </View> */}
             </View>
             <View style={{}} showsVerticalScrollIndicator={false} >
                 {active === 0 ?
@@ -166,51 +219,7 @@ const Collection = ({ navigation }) => {
                         {
                             <>
                                 <View style={{}}>
-                                    {/* <View style={{ alignItems: 'center', marginTop: 40 }}>
-                            <View style={{ width: 96, height: 96 }}>
-                                <HeartCollectionIcon />
-                            </View>
-                            <Text style={{ fontSize: 22, fontWeight: '600', color: appColors.black, marginTop: 20 }}>Collections</Text>
-                            <Text style={{ fontSize: 18, fontWeight: '600', color: appColors.black, marginTop: 30 }}>Collect your favorites</Text>
-                            <Text style={{ fontSize: 16, fontWeight: '300', color: appColors.black, marginTop: 14, textAlign: 'center' }}>
-                                Tap the Heart on any property to add it to this collection
-                            </Text>
 
-                            <View style={{ marginTop: 20 }}>
-                                <View style={styles.searchButton}>
-                                    <View style={{ width: 24, height: 24 }}>
-                                        <SearchBottomIcon stroke={appColors.white} />
-                                    </View>
-                                    <Text style={{ fontWeight: '600', marginTop: 2, color: appColors.white, marginLeft: 8, }}>Start searching</Text>
-                                </View>
-                            </View>
-
-                            <View style={{ marginTop: 20 }}>
-                                <View style={styles.enquiredStyle}>
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <View style={{ width: 24, height: 24 }}>
-                                            <MassageIcon />
-                                        </View>
-                                        <Text style={styles.textStyle}>Enquired</Text>
-                                    </View>
-                                    <View style={{ width: 24, height: 24 }}>
-                                        <ArrowRightIcon />
-                                    </View>
-                                </View>
-
-                                <View style={styles.enquiredStyle}>
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <View style={{ width: 24, height: 24 }}>
-                                            <HiddenIcon />
-                                        </View>
-                                        <Text style={styles.textStyle}>Hidden</Text>
-                                    </View>
-                                    <View style={{ width: 24, height: 24 }}>
-                                        <ArrowRightIcon />
-                                    </View>
-                                </View>
-                            </View>
-                        </View> */}
                                     {loading ? (
                                         <View style={{ height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center', }}>
                                             <ActivityIndicator size={'large'} color={appColors.lightRed} />
@@ -218,69 +227,73 @@ const Collection = ({ navigation }) => {
                                         </View>
                                     ) : <>
                                         <FlatList
-                                            data={propData}
+                                            data={favProp}
                                             contentContainerStyle={styles.listContainer}
                                             showsVerticalScrollIndicator={false}
                                             // scrollEnabled={false}
                                             renderItem={({ item, index }) => {
+                                                console.log({ status: item?.status })
 
                                                 return (
-                                                    <View style={styles.propCard} key={index}>
-                                                        <TouchableOpacity onPress={() => navigation.navigate('HouseBookingInnerPage', { item })} >
-                                                            <ImageBackground
-                                                                style={styles.imgStyle}
-                                                                resizeMode={(item?.cover_img) ? 'cover' : 'contain'}
-                                                                source={(item?.cover_img) ? { uri: IMAGE_URL + item?.cover_img } : IMAGES.kooieBlackLogo}
-                                                            >
-                                                                <TouchableOpacity style={styles.favButton} >
-                                                                    {
-                                                                        <Heart size={scale(24)} color={appColors.red} />
-                                                                        // <HeartBottomIcon stroke={appColors.red} />
-                                                                    }
+                                                    <>
+                                                        {item?.status === 0 &&
+                                                            <View style={styles.propCard} key={index}>
+                                                                <TouchableOpacity onPress={() => navigation.navigate('HouseBookingInnerPage', { item: { id: item?.property_id } })} >
+                                                                    <ImageBackground
+                                                                        style={styles.imgStyle}
+                                                                        resizeMode={(item?.cover_img) ? 'cover' : 'contain'}
+                                                                        source={(item?.get_save_properties?.all_images[0]?.image_vedio_file) ? { uri: IMAGE_URL + item?.get_save_properties?.all_images[0]?.image_vedio_file } : IMAGES.kooieBlackLogo}
+                                                                    >
+                                                                        <TouchableOpacity style={styles.favButton} onPress={() => { removeFavourate(item?.id) }}>
+                                                                            {
+                                                                                <Heart size={scale(24)} color={appColors.red} />
+                                                                                // <HeartBottomIcon stroke={appColors.red} />
+                                                                            }
+                                                                        </TouchableOpacity>
+                                                                    </ImageBackground>
                                                                 </TouchableOpacity>
-                                                            </ImageBackground>
-                                                        </TouchableOpacity>
-                                                        <View style={{ padding: 14, }}>
-                                                            <Text style={styles.text_16}>For Sale {(item?.po_price) ? '$' + (item?.po_price) : (item?.from_price) && '$' + (item?.from_price)} {((item?.from_price) || (item?.to_price)) && ' - '} {(item?.to_price) && '$' + (item?.to_price)} </Text>
+                                                                <View style={{ padding: 14, }}>
+                                                                    <Text style={styles.text_16}>For Sale {(item?.get_save_properties?.po_price) ? '$' + (item?.get_save_properties?.po_price) : (item?.get_save_properties?.from_price) && '$' + (item?.get_save_properties?.from_price)} {((item?.get_save_properties?.from_price) || (item?.get_save_properties?.to_price)) && ' - '} {(item?.get_save_properties?.to_price) && '$' + (item?.get_save_properties?.to_price)} </Text>
 
-                                                            <Text style={styles.para_}>{(item?.title) && (item?.title)}</Text>
+                                                                    <Text style={styles.para_}>{(item?.get_save_properties?.title) && (item?.get_save_properties?.title)}</Text>
 
-                                                            <View style={{ marginVertical: 8, flexDirection: 'row', }}>
+                                                                    <View style={{ marginVertical: 8, flexDirection: 'row', }}>
 
-                                                                {(item?.bedrooms) > 1 && <View style={styles.row_}>
-                                                                    <View style={styles.icon_container}>
-                                                                        <BedIcon />
+                                                                        {(item?.get_save_properties?.bedrooms) > 1 && <View style={styles.row_}>
+                                                                            <View style={styles.icon_container}>
+                                                                                <BedIcon />
+                                                                            </View>
+                                                                            <Text style={styles.text_13}>{(item?.get_save_properties?.bedrooms) ? (item?.get_save_properties?.bedrooms) : 0}</Text>
+                                                                        </View>}
+
+                                                                        {(item?.get_save_properties?.bathrooms) > 1 && <View style={styles.row_}>
+                                                                            <View style={styles.icon_container}>
+                                                                                <ShawarIcon />
+                                                                            </View>
+                                                                            <Text style={styles.text_13}>{(item?.get_save_properties?.bathrooms) ? (item?.get_save_properties?.bathrooms) : 0}</Text>
+                                                                        </View>}
+
+                                                                        {(item?.get_save_properties?.car_spaces) > 1 && <View style={styles.row_}>
+                                                                            <View style={styles.icon_container}>
+                                                                                <CarIcon />
+                                                                            </View>
+                                                                            <Text style={styles.text_13}>{(item?.get_save_properties?.car_spaces) ? (item?.get_save_properties?.car_spaces) : 0}</Text>
+                                                                        </View>}
+
+                                                                        {(item?.get_save_properties?.get_property_details_info?.interior) && <View style={styles.row_}>
+                                                                            <View style={styles.icon_container}>
+                                                                                <MeterIcon />
+                                                                            </View>
+                                                                            <Text style={styles.text_13}>{(item?.get_save_properties?.get_property_details_info?.interior) && (item?.get_save_properties?.get_property_details_info?.interior)}</Text>
+                                                                        </View>}
                                                                     </View>
-                                                                    <Text style={styles.text_13}>{(item?.bedrooms) ? (item?.bedrooms) : 0}</Text>
-                                                                </View>}
 
-                                                                {(item?.bathrooms) > 1 && <View style={styles.row_}>
-                                                                    <View style={styles.icon_container}>
-                                                                        <ShawarIcon />
+                                                                    <View>
+                                                                        <Text style={styles.para_}>Inspection : <Text style={{ opacity: 1 }}>{(item.created_at) && dateFormat((item.created_at), "ddd, dd mmm yy")}</Text></Text>
                                                                     </View>
-                                                                    <Text style={styles.text_13}>{(item?.bathrooms) ? (item?.bathrooms) : 0}</Text>
-                                                                </View>}
-
-                                                                {(item?.car_spaces) > 1 && <View style={styles.row_}>
-                                                                    <View style={styles.icon_container}>
-                                                                        <CarIcon />
-                                                                    </View>
-                                                                    <Text style={styles.text_13}>{(item?.car_spaces) ? (item?.car_spaces) : 0}</Text>
-                                                                </View>}
-
-                                                                {(item?.propbasic_details[0]?.interior) && <View style={styles.row_}>
-                                                                    <View style={styles.icon_container}>
-                                                                        <MeterIcon />
-                                                                    </View>
-                                                                    <Text style={styles.text_13}>{(item?.propbasic_details[0]?.interior) && (item?.propbasic_details[0]?.interior)}</Text>
-                                                                </View>}
-                                                            </View>
-
-                                                            <View>
-                                                                <Text style={styles.para_}>Inspection : <Text style={{ opacity: 1 }}>{(item.created_at) && dateFormat((item.created_at), "ddd, dd mmm yy")}</Text></Text>
-                                                            </View>
-                                                        </View>
-                                                    </View>
+                                                                </View>
+                                                            </View>}
+                                                    </>
                                                 )
                                             }}
                                         />
@@ -387,6 +400,8 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     listContainer: {
+        paddingTop: scale(10),
+        paddingBottom: scale(50)
         // justifyContent: 'center',
         // alignItems: 'center',
     },
@@ -407,6 +422,7 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 26,
         fontWeight: '600',
+        color: appColors.black
     },
     todayDateText: {
         color: 'red',
@@ -453,7 +469,7 @@ const styles = StyleSheet.create({
         borderColor: appColors.offWhite,
         borderRadius: scale(10),
         marginBottom: scale(15),
-        overflow: 'hidden'
+        overflow: 'hidden',
     },
     favButton: {
         width: scale(34),
